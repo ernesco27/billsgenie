@@ -1,0 +1,9 @@
+.content {
+  position: absolute;
+  top: 0;
+  width: 100vw;
+
+  z-index: -1;
+
+  margin: 0;
+}
