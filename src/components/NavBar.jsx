@@ -1,190 +1,116 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-// function NavBar() {
-//   return <div></div>;
-// }
+import { AiOutlineMenu } from "react-icons/ai";
+import { FiShoppingCart } from "react-icons/fi";
+import { BsChatLeft } from "react-icons/bs";
+import { RiNotification3Line } from "react-icons/ri";
+import { MdKeyboardArrowDown } from "react-icons/md";
 
-// export { NavBar };
+import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
+import avatar from "../data/avatar.jpg";
+import { Cart, Chat, Notification, UserProfile } from ".";
 
-import Stack from "@mui/material/Stack";
-import { lightGreen } from "@mui/material/colors";
-import { styled } from "@mui/material/styles";
+import { useStateContext } from "../contexts/ContextProvider";
 
-const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const NavButton = ({ title, customFunc, color, icon, dotColor }) => (
+  <TooltipComponent content={title} position="BottomCenter">
+    <button
+      type="button"
+      onClick={customFunc}
+      style={{ color }}
+      className="relative text-3xl rounded-full p-3 hover:bg-light-gray"
+    >
+      <span
+        style={{ background: dotColor }}
+        className="absolute inline-flex rounded-full h-2 w-2 right-2 top-2"
+      />
+      {icon}
+    </button>
+  </TooltipComponent>
+);
 
-function NavBar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+const Navbar = () => {
+  const {
+    activeMenu,
+    setActiveMenu,
+    isClicked,
+    setIsClicked,
+    handleClick,
+    screenSize,
+    setScreenSize,
+    currentColor,
+    setOpenCard,
+  } = useStateContext();
 
-  const MyButton = styled(Button)(({ theme }) => ({
-    color: theme.palette.getContrastText(lightGreen[500]),
-    backgroundColor: lightGreen[500],
-    "&:hover": {
-      backgroundColor: lightGreen[700],
-    },
-  }));
+  useEffect(() => {
+    const handleResize = () => setScreenSize(window.innerWidth);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
+    window.addEventListener("resize", handleResize);
+    handleResize();
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  useEffect(() => {
+    if (screenSize <= 900) {
+      setActiveMenu(false);
+    } else {
+      setActiveMenu(true);
+    }
+  }, [screenSize]);
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
+    <div className="flex justify-between p-2 md:mx-6 relative">
+      <NavButton
+        title="Menu"
+        customFunc={() => setActiveMenu((prevActiveMenu) => !prevActiveMenu)}
+        color={currentColor}
+        icon={<AiOutlineMenu />}
+      />
+      <div className="flex">
+        <NavButton
+          title="Cart"
+          customFunc={() => handleClick("cart")}
+          color={currentColor}
+          icon={<FiShoppingCart />}
+        />
+        <NavButton
+          title="Chat"
+          customFunc={() => handleClick("chat")}
+          dotColor="#03C9D7"
+          color={currentColor}
+          icon={<BsChatLeft />}
+        />
+        <NavButton
+          title="Notification"
+          customFunc={() => handleClick("notification")}
+          dotColor="#03C9D7"
+          color={currentColor}
+          icon={<RiNotification3Line />}
+        />
+        <TooltipComponent content="Profile" position="BottomCenter">
+          <div
+            className="flex items-center gap-2 cursor-pointer p-1 hover:bg-light-gray rounded-lg"
+            onClick={() => handleClick("userProfile")}
           >
-            LOGO
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-
-          <Box sx={{ flexGrow: 0 }}>
-            {/* <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip> */}
-            <Stack spacing={2} direction="row">
-              <Button size="small" variant="contained">
-                Login
-              </Button>
-              <MyButton size="small" variant="contained">
-                Sign Up
-              </MyButton>
-            </Stack>
-
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+            <img src={avatar} className="rounded-full w-10 h-10 " />
+            <p>
+              <span className="text-gray-400 text-lg">Hi,</span>{" "}
+              <span className="text-gray-400 font-bold ml-1 text-lg">
+                Ernest
+              </span>
+            </p>
+            <MdKeyboardArrowDown className="text-gray-400 text-lg" />
+          </div>
+        </TooltipComponent>
+        {isClicked.cart && <Cart />}
+        {isClicked.chat && <Chat />}
+        {isClicked.notification && <Notification />}
+        {isClicked.userProfile && <UserProfile />}
+      </div>
+    </div>
   );
-}
-export { NavBar };
+};
+
+export default Navbar;

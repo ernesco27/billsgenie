@@ -1,5 +1,5 @@
 {
-  "name": "vite-project",
+  "name": "my-dashboard",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,25 +10,39 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
-    "@mui/icons-material": "^5.15.15",
-    "@mui/material": "^5.15.15",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.0"
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@mui/base": "^5.0.0-beta.40",
+    "@mui/icons-material": "^5.16.7",
+    "@mui/material": "^5.16.7",
+    "@mui/x-date-pickers": "^7.13.0",
+    "@syncfusion/ej2-base": "^26.2.5",
+    "@syncfusion/ej2-react-calendars": "^26.2.8",
+    "@syncfusion/ej2-react-charts": "^26.2.8",
+    "@syncfusion/ej2-react-grids": "^26.2.8",
+    "@syncfusion/ej2-react-inputs": "^26.2.5",
+    "@syncfusion/ej2-react-kanban": "^26.2.5",
+    "@syncfusion/ej2-react-popups": "^26.2.8",
+    "@syncfusion/ej2-react-richtexteditor": "^26.2.8",
+    "@syncfusion/ej2-react-schedule": "^26.2.7",
+    "dayjs": "^1.11.12",
+    "dotenv": "^16.4.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.2.1",
+    "react-router-dom": "^6.26.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.19",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.6",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3",
-    "vite": "^5.2.0"
+    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
+    "postcss": "^8.4.40",
+    "tailwindcss": "^3.4.7",
+    "vite": "^5.3.4"
   }
 }
