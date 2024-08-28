@@ -80,9 +80,13 @@ const Autocomplete = React.forwardRef(function Autocomplete(props, ref) {
         >
           <StyledListbox {...getListboxProps()}>
             {groupedOptions.map((option, index) => {
-              const optionProps = getOptionProps({ option, index });
+              const optionProps = getOptionProps({ option });
 
-              return <StyledOption {...optionProps}>{option}</StyledOption>;
+              return (
+                <StyledOption key={index} {...optionProps}>
+                  {option}
+                </StyledOption>
+              );
             })}
 
             {groupedOptions.length === 0 && (

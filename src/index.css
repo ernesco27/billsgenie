@@ -9,3 +9,34 @@ body {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.e-input-group input.e-input,
+.e-input-group.e-control-wrapper input.e-input,
+.e-input-group textarea.e-input,
+.e-input-group.e-control-wrapper textarea.e-input {
+  height: 40px;
+  font-size: 20px;
+}
+
+.e-grid .e-edit {
+  color: green;
+}
+
+.e-delete {
+  color: red;
+}
+
+.e-flat {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.e-grid .e-gridform .e-rowcell .e-input-group .e-input.e-field {
+  font-family: cursive;
+  color: rgb(214, 33, 123);
+}
+
+.custom-grid .e-rowcell {
+  font-size: 16px; /* Adjust the font size as needed */
+}

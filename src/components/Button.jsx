@@ -1,9 +1,18 @@
 import React from "react";
 
-const Button = ({ color, bgColor, text, icon, customFunc, width, height }) => {
+const Button = ({
+  disabled,
+  bgColor,
+  text,
+  icon,
+  customFunc,
+  width,
+  height,
+}) => {
   return (
     <div>
       <button
+        disabled={disabled}
         type="button"
         onClick={customFunc}
         className="rounded-lg text-center font-bold text-xl flex items-center justify-center gap-2 p-1 hover:shadow-md"

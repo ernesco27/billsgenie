@@ -16,7 +16,7 @@ const Header = ({ category, title, customFunc }) => {
       <div>
         <button
           type="button"
-          onClick={() => {}}
+          onClick={customFunc}
           className="h-14 w-44 rounded-lg text-center font-bold text-xl flex items-center p-1 hover:shadow-md"
           style={{ backgroundColor: currentColor }}
         >

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   GridComponent,
   ColumnsDirective,
@@ -16,34 +16,34 @@ import {
 } from "@syncfusion/ej2-react-grids";
 import { DateRangePickerComponent } from "@syncfusion/ej2-react-calendars";
 
-// import {
-//   ordersData,
-//   newOrderData,
-//   contextMenuItems,
-//   ordersGrid,
-// } from "../data/dummy";
-
-//import { Header } from "../components";
-
 const DataGrid = ({ info, columns }) => {
   const toolbarOptions = ["Search", "Print"];
 
   const [data, setData] = useState(info);
 
-  const handleDateRangeChange = (e) => {
-    const [startDate, endDate] = e.value;
-    if (startDate && endDate) {
-      const filteredData = newOrderData.filter((item) => {
-        const itemDate = new Date(item.OrderDate);
-        const start = new Date(startDate).setHours(0, 0, 0, 0);
-        const end = new Date(endDate).setHours(23, 59, 59, 999);
+  useEffect(() => {
+    setData(info);
+  }, [info]);
 
+  const parseDate = (dateString) => {
+    const [day, month, year] = dateString.split("/");
+    return new Date(`${year}/${month}/${day}`);
+  };
+
+  const handleDateRangeChange = (e) => {
+    const [startDate, endDate] = e.value || [];
+    if (startDate && endDate) {
+      const start = new Date(startDate).setHours(0, 0, 0, 0);
+      const end = new Date(endDate).setHours(23, 59, 59, 999);
+
+      const filteredData = info.filter((item) => {
+        const itemDate = parseDate(item.OrderDate).setHours(0, 0, 0, 0);
         return itemDate >= start && itemDate <= end;
       });
 
       setData(filteredData);
     } else {
-      setData(newOrderData);
+      setData(info); // Reset to the original data if no date range is selected
     }
   };
 
@@ -51,11 +51,12 @@ const DataGrid = ({ info, columns }) => {
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white rounded-3xl">
       <DateRangePickerComponent change={handleDateRangeChange} />
       <GridComponent
+        cssClass="custom-grid"
         id="gridcomp"
         dataSource={data}
         allowPaging
         allowSorting
-        allowFiltering
+        //allowFiltering
         toolbar={toolbarOptions}
       >
         <ColumnsDirective>
@@ -65,9 +66,9 @@ const DataGrid = ({ info, columns }) => {
         </ColumnsDirective>
         <Inject
           services={[
-            Resize,
+            //Resize,
             Sort,
-            ContextMenu,
+            //ContextMenu,
             Filter,
             Page,
             ExcelExport,
