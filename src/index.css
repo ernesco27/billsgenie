@@ -40,3 +40,55 @@ body {
 .custom-grid .e-rowcell {
   font-size: 16px; /* Adjust the font size as needed */
 }
+
+@media print {
+  body,
+  html {
+    font-size: 0.75rem; /* Adjust as needed, 0.75rem is a common smaller size */
+    height: 100vh; /* Use 100% here to support printing more than a single page*/
+    margin: 0 !important;
+    padding: 0 !important;
+    /* overflow: hidden; */
+  }
+
+  /* Specific styles for the invoice content */
+  .invoice-content {
+    font-size: 0.75rem; /* This can be adjusted to any size you prefer */
+  }
+
+  .header {
+    font-size: 0.75rem;
+  }
+
+  .min-h-screen {
+    min-height: 100vh;
+  }
+
+  .page {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 100vh;
+    /* page-break-after: always; */
+  }
+
+  /* .footer {
+    position: absolute;
+    bottom: 0;
+    width: 96%;
+  } */
+
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .no-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+/* .print {
+    page-break-inside: avoid;
+  } */

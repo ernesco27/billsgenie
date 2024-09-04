@@ -13,10 +13,17 @@ import {
   Edit,
   Inject,
   Toolbar,
+  CommandColumn,
 } from "@syncfusion/ej2-react-grids";
 import { DateRangePickerComponent } from "@syncfusion/ej2-react-calendars";
 
-const DataGrid = ({ info, columns }) => {
+const DataGrid = ({
+  info,
+  columns,
+  handleViewInvoice,
+  handleEditInvoice,
+  handleDeleteInvoice,
+}) => {
   const toolbarOptions = ["Search", "Print"];
 
   const [data, setData] = useState(info);
@@ -47,6 +54,17 @@ const DataGrid = ({ info, columns }) => {
     }
   };
 
+  const handleCommandClick = (args) => {
+    const invoiceNo = args.rowData.InvoiceNo || args.rowData.ReturnNo;
+    if (args.commandColumn.type === "View") {
+      handleViewInvoice(invoiceNo);
+    } else if (args.commandColumn.type === "Edit") {
+      handleEditInvoice(invoiceNo);
+    } else if (args.commandColumn.type === "Delete") {
+      handleDeleteInvoice(invoiceNo);
+    }
+  };
+
   return (
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white rounded-3xl">
       <DateRangePickerComponent change={handleDateRangeChange} />
@@ -58,6 +76,7 @@ const DataGrid = ({ info, columns }) => {
         allowSorting
         //allowFiltering
         toolbar={toolbarOptions}
+        commandClick={handleCommandClick}
       >
         <ColumnsDirective>
           {columns.map((item, index) => (
@@ -66,6 +85,7 @@ const DataGrid = ({ info, columns }) => {
         </ColumnsDirective>
         <Inject
           services={[
+            CommandColumn,
             //Resize,
             Sort,
             //ContextMenu,

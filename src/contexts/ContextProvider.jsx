@@ -1,5 +1,6 @@
 import react, { createContext, useContext, useState, useEffect } from "react";
 import dayjs from "dayjs";
+import { CompassOutlined } from "@ant-design/icons";
 
 const StateContext = createContext();
 
@@ -11,6 +12,7 @@ const initialState = {
 };
 
 const customers = ["Cash", "MaxMart", "Shoprite", "Melcom"];
+const suppliers = ["Cash", "Izako", "Harimat", "G-cube"];
 const items = [
   "Super Chocolate",
   "Eskimo Vanilla",
@@ -89,6 +91,7 @@ const ContextProvider = ({ children }) => {
   const [date, setDate] = useState(dayjs());
   const [tranType, setTranType] = useState("Cash");
   const [customer, setCustomer] = useState("");
+  const [supplier, setSupplier] = useState("");
   const [address, setAddress] = useState("");
   const [tin, setTin] = useState("");
   const [product, setProduct] = useState("");
@@ -111,35 +114,310 @@ const ContextProvider = ({ children }) => {
 
   const [itemList, setItemList] = useState([]);
   const [salesList, setSalesList] = useState([]);
+  const [salesReturnsList, setSalesReturnsList] = useState([]);
+  const [purchasesList, setPurchasesList] = useState([]);
+  const [purchasesReturnsList, setPurchasesReturnsList] = useState([]);
 
-  const handleSave = (date, trantype, customer, items, amount) => {
-    const companyInitials = "BG"; // Replace with your company initials
-    const currentYear = new Date().getFullYear();
+  const [purchasesCreation, setPurchasesCreation] = useState(false);
 
-    const lastInvoiceNo = salesList.length
-      ? salesList[0].InvoiceNo
-      : `${companyInitials}${currentYear}00`;
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [selectedToEdit, setSelectedToEdit] = useState(null);
 
-    const lastInvoiceNumber = parseInt(lastInvoiceNo.slice(-2), 10);
-    const nextInvoiceNumber = (lastInvoiceNumber + 1)
-      .toString()
-      .padStart(2, "0");
+  const [editingIndex, setEditingIndex] = useState(null);
 
-    const newInvoiceNo = `${companyInitials}${currentYear}${nextInvoiceNumber}`;
+  const handleViewInvoice = (invoiceNo) => {
+    const invoice = salesList.find((sale) => sale.InvoiceNo === invoiceNo);
+    if (invoice) {
+      setSelectedInvoice(invoice);
+    }
+  };
 
-    const newSale = {
-      Id: salesList.length
-        ? Math.max(...salesList.map((item, index) => index)) + 2
-        : 1,
-      OrderDate: date.format("DD/MM/YYYY"),
-      InvoiceNo: newInvoiceNo,
-      TranType: trantype,
-      CustomerName: customer,
-      Items: items,
-      TotalAmount: amount,
-    };
+  const handleViewSalesReturn = (returnNo) => {
+    const returned = salesReturnsList.find(
+      (returns) => returns.ReturnNo === returnNo,
+    );
+    if (returned) {
+      setSelectedInvoice(returned);
+    }
+  };
 
-    setSalesList([newSale, ...salesList]);
+  const handleEditInvoice = (invoiceNo) => {
+    const invoiceToEdit = salesList.find(
+      (invoice) => invoice.InvoiceNo === invoiceNo,
+    );
+
+    setSelectedToEdit(invoiceToEdit);
+    setCreateInvoice(true);
+  };
+
+  const handleEditSalesReturn = (returnNo) => {
+    const salesReturnToEdit = salesReturnsList.find(
+      (returned) => returned.ReturnNo === returnNo,
+    );
+
+    setSelectedToEdit(salesReturnToEdit);
+    setCreateInvoice(true);
+  };
+
+  const handleDeleteInvoice = (invoiceNo) => {
+    const updatedList = salesList.filter(
+      (invoice) => invoice.InvoiceNo !== invoiceNo,
+    );
+
+    setSalesList(updatedList);
+  };
+
+  const handleDeleteSalesReturn = (returnNo) => {
+    const updatedList = salesReturnsList.filter(
+      (returned) => returned.ReturnNo !== returnNo,
+    );
+
+    setSalesReturnsList(updatedList);
+  };
+
+  const handleSaveSR = (
+    date,
+    trantype,
+    customer,
+    items,
+    amount,
+    generalDiscAmount,
+    totalTax,
+    subTotal,
+    remarks,
+  ) => {
+    if (selectedToEdit) {
+      // Updating an existing invoice
+      const updatedSalesReturnsList = salesReturnsList.map((returns) =>
+        returns.ReturnNo === selectedToEdit.ReturnNo
+          ? {
+              ...returns,
+              ReturnDate: date.format("DD/MM/YYYY"),
+              TranType: trantype,
+              CustomerName: customer,
+              Items: items,
+              TotalAmount: amount,
+              SubTotal: subTotal,
+              TotalDiscount: generalDiscAmount,
+              TotalTax: totalTax,
+              Remarks: remarks,
+            }
+          : returns,
+      );
+
+      setSalesReturnsList(updatedSalesReturnsList);
+      setSelectedToEdit(null); // Reset the selectedToEdit state after updating
+    } else {
+      // Creating a new invoice
+      const sectionInitials = "SR";
+      const currentYear = new Date().getFullYear();
+
+      const lastReturnNo = salesReturnsList.length
+        ? salesReturnsList[0].ReturnNo
+        : `${sectionInitials}${currentYear}00`;
+
+      const lastReturnNumber = parseInt(lastReturnNo.slice(-2), 10);
+      const nextReturnNumber = (lastReturnNumber + 1)
+        .toString()
+        .padStart(2, "0");
+
+      const newReturnNo = `${sectionInitials}${currentYear}${nextReturnNumber}`;
+
+      const newSalesReturn = {
+        Id: salesReturnsList.length
+          ? Math.max(...salesReturnsList.map((item, index) => index)) + 2
+          : 1,
+        ReturnDate: date.format("DD/MM/YYYY"),
+        ReturnNo: newReturnNo,
+        TranType: trantype,
+        CustomerName: customer,
+        Items: items,
+        TotalAmount: amount,
+        SubTotal: subTotal,
+        TotalDiscount: generalDiscAmount,
+        TotalTax: totalTax,
+        Remarks: remarks,
+      };
+
+      console.log("new returns:", newSalesReturn);
+
+      setSalesReturnsList([newSalesReturn, ...salesReturnsList]);
+    }
+
+    // Reset the input fields
+    setCustomer("");
+    setProduct("");
+    setQuantity("");
+    setPrice("");
+    setTax("");
+    setDiscountType("None");
+    setDiscountValue("");
+    setDiscountAmount(0);
+    setVatAmount(0);
+    setItemList([]);
+    setCreateInvoice(false); // Close the invoice creation modal
+  };
+
+  const handleSave = (
+    date,
+    trantype,
+    customer,
+    items,
+    amount,
+    generalDiscAmount,
+    totalTax,
+    subTotal,
+    remarks,
+  ) => {
+    if (selectedToEdit) {
+      // Updating an existing invoice
+      const updatedSalesList = salesList.map((sale) =>
+        sale.InvoiceNo === selectedToEdit.InvoiceNo
+          ? {
+              ...sale,
+              OrderDate: date.format("DD/MM/YYYY"),
+              TranType: trantype,
+              CustomerName: customer,
+              Items: items,
+              TotalAmount: amount,
+              SubTotal: subTotal,
+              TotalDiscount: generalDiscAmount,
+              TotalTax: totalTax,
+              Remarks: remarks,
+            }
+          : sale,
+      );
+
+      setSalesList(updatedSalesList);
+      setSelectedToEdit(null); // Reset the selectedToEdit state after updating
+    } else {
+      // Creating a new invoice
+      const sectionInitials = "SI"; // Replace with your company initials
+      const currentYear = new Date().getFullYear();
+
+      const lastInvoiceNo = salesList.length
+        ? salesList[0].InvoiceNo
+        : `${sectionInitials}${currentYear}00`;
+
+      const lastInvoiceNumber = parseInt(lastInvoiceNo.slice(-2), 10);
+      const nextInvoiceNumber = (lastInvoiceNumber + 1)
+        .toString()
+        .padStart(2, "0");
+
+      const newInvoiceNo = `${sectionInitials}${currentYear}${nextInvoiceNumber}`;
+
+      const newSale = {
+        Id: salesList.length
+          ? Math.max(...salesList.map((item, index) => index)) + 2
+          : 1,
+        OrderDate: date.format("DD/MM/YYYY"),
+        InvoiceNo: newInvoiceNo,
+        TranType: trantype,
+        CustomerName: customer,
+        Items: items,
+        TotalAmount: amount,
+        SubTotal: subTotal,
+        TotalDiscount: generalDiscAmount,
+        TotalTax: totalTax,
+        Remarks: remarks,
+      };
+
+      setSalesList([newSale, ...salesList]);
+    }
+
+    // Reset the input fields
+    setCustomer("");
+    setProduct("");
+    setQuantity("");
+    setPrice("");
+    setTax("");
+    setDiscountType("None");
+    setDiscountValue("");
+    setDiscountAmount(0);
+    setVatAmount(0);
+    setItemList([]);
+    setCreateInvoice(false); // Close the invoice creation modal
+  };
+
+  const handleSavePurchases = (
+    date,
+    trantype,
+    supplier,
+    items,
+    amount,
+    generalDiscAmount,
+    totalTax,
+    subTotal,
+    remarks,
+  ) => {
+    if (selectedToEdit) {
+      // Updating an existing invoice
+      const updatedPurchasesList = purchasesList.map((purchase) =>
+        purchase.InvoiceNo === selectedToEdit.InvoiceNo
+          ? {
+              ...purchase,
+              OrderDate: date.format("DD/MM/YYYY"),
+              TranType: trantype,
+              SupplierName: supplier,
+              Items: items,
+              TotalAmount: amount,
+              SubTotal: subTotal,
+              TotalDiscount: generalDiscAmount,
+              TotalTax: totalTax,
+              Remarks: remarks,
+            }
+          : purchase,
+      );
+
+      setPurchasesList(updatedPurchasesList);
+      setSelectedToEdit(null); // Reset the selectedToEdit state after updating
+    } else {
+      // Creating a new invoice
+      const sectionInitials = "PI";
+      const currentYear = new Date().getFullYear();
+
+      const lastInvoiceNo = purchasesList.length
+        ? purchasesList[0].InvoiceNo
+        : `${sectionInitials}${currentYear}00`;
+
+      const lastInvoiceNumber = parseInt(lastInvoiceNo.slice(-2), 10);
+      const nextInvoiceNumber = (lastInvoiceNumber + 1)
+        .toString()
+        .padStart(2, "0");
+
+      const newInvoiceNo = `${sectionInitials}${currentYear}${nextInvoiceNumber}`;
+
+      const newPurchase = {
+        Id: purchasesList.length
+          ? Math.max(...purchasesList.map((item, index) => index)) + 2
+          : 1,
+        OrderDate: date.format("DD/MM/YYYY"),
+        InvoiceNo: newInvoiceNo,
+        TranType: trantype,
+        SupplierName: supplier,
+        Items: items,
+        TotalAmount: amount,
+        SubTotal: subTotal,
+        TotalDiscount: generalDiscAmount,
+        TotalTax: totalTax,
+        Remarks: remarks,
+      };
+
+      setPurchasesList([newPurchase, ...purchasesList]);
+    }
+
+    // Reset the input fields
+    setSupplier("");
+    setProduct("");
+    setQuantity("");
+    setPrice("");
+    setTax("");
+    setDiscountType("None");
+    setDiscountValue("");
+    setDiscountAmount(0);
+    setVatAmount(0);
+    setItemList([]);
+    setCreateInvoice(false); // Close the invoice creation modal
   };
 
   const handleAddItem = (
@@ -217,45 +495,41 @@ const ContextProvider = ({ children }) => {
   }, [discountValue]);
 
   const calcGeneralDiscount = () => {
-    const generalDiscValue = (generalDiscount / 100) * subTotal;
-    setGeneralDiscAmount(generalDiscValue);
+    const generalDiscValue = (generalDiscount / 100) * subTotal || 0;
+
+    setGeneralDiscAmount(generalDiscValue.toFixed(2)); //here
   };
 
   const calcSubtotal = () => {
-    //const generalDisc = parseFloat(generalDiscAmount || 0);
     let subtotal = 0;
-    itemList.forEach((item) => {
-      let exVat = item.Price * item.Quantity;
-      subtotal += parseFloat(exVat);
-    });
-
-    //const discountedSubtotal = subtotal - generalDisc;
-
-    setSubTotal(subtotal.toFixed(2));
-  };
-
-  const calcTotalDisc = () => {
     let itemsDiscount = 0;
-    let totalDiscount;
-    itemList.forEach((item) => {
-      itemsDiscount += parseFloat(item.Discount);
-    });
+    let discountedSubTotal = 0;
 
-    totalDiscount = itemsDiscount + generalDiscAmount;
+    if (itemList.length > 0) {
+      itemList.forEach((item) => {
+        let exVat = item.Price * item.Quantity;
+        itemsDiscount += parseFloat(item.Discount);
+        subtotal += parseFloat(exVat);
+      });
 
-    setTotalDiscount(totalDiscount.toFixed(2));
+      discountedSubTotal = subtotal - itemsDiscount;
+    }
+
+    // Set subTotal to 0.00 if itemList is empty, otherwise set the calculated value
+    setSubTotal(discountedSubTotal.toFixed(2));
   };
 
   const calcTotalTax = () => {
     if (generalDiscount) {
+      //const discSubTotal = subTotal - generalDiscAmount;
       const discSubTotal = subTotal - generalDiscAmount;
-      const taxValue = discSubTotal * tax;
+      const taxValue = discSubTotal * tax || 0;
 
       setTotalTax(taxValue.toFixed(2));
     } else {
       let totalTax = 0;
       itemList.forEach((item) => {
-        totalTax += parseFloat(item.Tax);
+        totalTax += parseFloat(item.Tax) || 0;
       });
 
       setTotalTax(totalTax.toFixed(2));
@@ -264,8 +538,9 @@ const ContextProvider = ({ children }) => {
 
   const calcTotal = () => {
     const subtotalValue = parseFloat(subTotal) || 0;
+
     const totalDiscountValue = parseFloat(generalDiscAmount) || 0;
-    // const generalDiscountValue = parseFloat(generalDiscAmount) || 0;
+
     const totalTaxValue = parseFloat(totalTax) || 0;
 
     let total = subtotalValue - totalDiscountValue + totalTaxValue;
@@ -277,16 +552,16 @@ const ContextProvider = ({ children }) => {
     calcGeneralDiscount();
   }, [generalDiscount, subTotal]);
 
-  useEffect(() => {
-    calcTotalDisc();
-  }, [itemList, generalDiscAmount]);
+  // useEffect(() => {
+  //   calcTotalDisc();
+  // }, [itemList, generalDiscAmount]);
 
   useEffect(() => {
     calcSubtotal();
 
     calcTotalTax();
     calcTotal();
-  }, [itemList, subTotal, totalDiscount, totalTax, tax]);
+  }, [itemList, subTotal, totalDiscount, totalTax, tax, generalDiscount]);
 
   const setMode = (e) => {
     setCurrentMode(e.target.value);
@@ -381,10 +656,162 @@ const ContextProvider = ({ children }) => {
     },
   ];
 
+  const returnsGrid = [
+    {
+      field: "ReturnDate",
+      headerText: "DATE",
+      width: "100",
+      textAlign: "Center",
+    },
+    {
+      field: "ReturnNo",
+      headerText: " RETURN NO.",
+      width: "150",
+      textAlign: "Center",
+    },
+    {
+      field: "CustomerName",
+      headerText: "CUSTOMER NAME",
+      width: "150",
+      textAlign: "Center",
+    },
+    {
+      field: "TotalAmount",
+      headerText: "TOTAL AMOUNT",
+      format: "C2",
+      textAlign: "Center",
+      editType: "numericedit",
+      width: "100",
+    },
+    {
+      field: "TranType",
+      headerText: "TRANS. TYPE",
+      width: "100",
+      textAlign: "Center",
+    },
+    {
+      field: "Action",
+      headerText: "ACTION",
+      width: "150",
+      textAlign: "Center",
+      commands:
+        userRole === "admin"
+          ? [
+              {
+                type: "View",
+                buttonOption: {
+                  //cssClass: "e-flat e-medium",
+                  iconCss: "e-eye e-icons",
+                },
+              },
+              {
+                type: "Edit",
+                buttonOption: {
+                  //cssClass: "e-flat",
+                  iconCss: "e-edit e-icons",
+                },
+              },
+              {
+                type: "Delete",
+                buttonOption: {
+                  //cssClass: "e-flat",
+                  iconCss: "e-icons e-trash ",
+                },
+              },
+            ]
+          : [
+              {
+                type: "View",
+                buttonOption: {
+                  cssClass: "e-flat",
+                  iconCss: "e-view e-icons",
+                },
+              },
+            ],
+    },
+  ];
+
+  const purchasesGrid = [
+    {
+      field: "OrderDate",
+      headerText: "DATE",
+      width: "100",
+      textAlign: "Center",
+    },
+    {
+      field: "InvoiceNo",
+      headerText: " INVOICE NO.",
+      width: "150",
+      textAlign: "Center",
+    },
+    {
+      field: "SupplierName",
+      headerText: "SUPPLIER NAME",
+      width: "150",
+      textAlign: "Center",
+    },
+    {
+      field: "TotalAmount",
+      headerText: "TOTAL AMOUNT",
+      format: "C2",
+      textAlign: "Center",
+      editType: "numericedit",
+      width: "100",
+    },
+    {
+      field: "TranType",
+      headerText: "TRANS. TYPE",
+      width: "100",
+      textAlign: "Center",
+    },
+    {
+      field: "Action",
+      headerText: "ACTION",
+      width: "150",
+      textAlign: "Center",
+      commands:
+        userRole === "admin"
+          ? [
+              {
+                type: "View",
+                buttonOption: {
+                  //cssClass: "e-flat e-medium",
+                  iconCss: "e-eye e-icons",
+                },
+              },
+              {
+                type: "Edit",
+                buttonOption: {
+                  //cssClass: "e-flat",
+                  iconCss: "e-edit e-icons",
+                },
+              },
+              {
+                type: "Delete",
+                buttonOption: {
+                  //cssClass: "e-flat",
+                  iconCss: "e-icons e-trash ",
+                },
+              },
+            ]
+          : [
+              {
+                type: "View",
+                buttonOption: {
+                  cssClass: "e-flat",
+                  iconCss: "e-view e-icons",
+                },
+              },
+            ],
+    },
+  ];
+
   return (
     <StateContext.Provider
       value={{
         ordersGrid,
+        returnsGrid,
+        purchasesGrid,
         activeMenu,
         setActiveMenu,
         isClicked,
@@ -428,6 +855,8 @@ const ContextProvider = ({ children }) => {
         setTranType,
         customer,
         setCustomer,
+        supplier,
+        setSupplier,
         address,
         setAddress,
         itemList,
@@ -450,6 +879,24 @@ const ContextProvider = ({ children }) => {
         generalDiscAmount,
         handleSave,
         salesList,
+        handleViewInvoice,
+        selectedInvoice,
+        setSelectedInvoice,
+        handleEditInvoice,
+        selectedToEdit,
+        setSelectedToEdit,
+        handleDeleteInvoice,
+        salesReturnsList,
+        setSalesReturnsList,
+        handleDeleteSalesReturn,
+        handleEditSalesReturn,
+        handleViewSalesReturn,
+        handleSaveSR,
+        purchasesList,
+        setPurchasesList,
+        handleSavePurchases,
+        purchasesCreation,
+        setPurchasesCreation,
       }}
     >
       {children}

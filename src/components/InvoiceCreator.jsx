@@ -22,12 +22,13 @@ import { IoMdAddCircle } from "react-icons/io";
 import { IoMdCloseCircle } from "react-icons/io";
 import { IoIosSave } from "react-icons/io";
 import { IoTrashBinSharp } from "react-icons/io5";
+import { SiShopware } from "react-icons/si";
 
 import { InputNumber, Space, Select } from "antd";
 
 import { NumberInputAdornments } from "./NumberInput";
 import { AutoSelect } from "./AutoInput";
-import { Button } from "../components";
+import { Button, ConfirmModal } from "../components";
 
 import {
   ColumnDirective,
@@ -43,18 +44,9 @@ import { NumericTextBoxComponent } from "@syncfusion/ej2-react-inputs";
 
 import { useStateContext } from "../contexts/ContextProvider";
 
-import {
-  ordersData,
-  newOrderData,
-  contextMenuItems,
-  ordersGrid,
-} from "../data/dummy";
-
-import { DataGrid } from "../components";
-import { CompressOutlined } from "@mui/icons-material";
-import { ItemForm } from "./dataForm";
-
 const customers = ["Cash", "MaxMart", "Shoprite", "Melcom"];
+const suppliers = ["Cash", "Izako", "Harimat", "G-cube"];
+
 const items = [
   "Super Chocolate",
   "Eskimo Vanilla",
@@ -78,7 +70,12 @@ const discountList = [
   { label: "General", value: "General" },
 ];
 
-const InvoiceCreator = () => {
+const InvoiceCreator = ({
+  invoiceDetails,
+  newTitle,
+  editTitle,
+  customFunc,
+}) => {
   const {
     setCreateInvoice,
     tin,
@@ -108,6 +105,8 @@ const InvoiceCreator = () => {
     setTranType,
     customer,
     setCustomer,
+    supplier,
+    setSupplier,
     address,
     setAddress,
     amount,
@@ -130,12 +129,27 @@ const InvoiceCreator = () => {
     setGeneralDiscount,
     generalDiscAmount,
     handleSave,
+    purchasesCreation,
   } = useStateContext();
 
   const [editingItemIndex, setEditingItemIndex] = useState(null);
   const [isAddBtnDisabled, setIsAddBtnDisabled] = useState(true);
+  const [isSaveBtnDisabled, setIsSaveBtnDisabled] = useState(true);
+  const [isCancelClicked, setIsCancelClicked] = useState(false);
 
   const editOptions = { allowEditing: true, allowDeleting: true };
+
+  useEffect(() => {
+    console.log("invoice details:", invoiceDetails);
+    if (invoiceDetails) {
+      //setDate(invoiceDetails.OrderDate);
+      setTranType(invoiceDetails.TranType);
+      setCustomer(invoiceDetails.CustomerName);
+      //setAddress(invoiceDetails.address);
+      setItemList(invoiceDetails.Items);
+      // Set other fields as needed
+    }
+  }, [invoiceDetails]);
 
   const itemsGrid = [
     {
@@ -212,6 +226,12 @@ const InvoiceCreator = () => {
       : setIsAddBtnDisabled(false);
   }, [quantity, product, price]);
 
+  useEffect(() => {
+    itemList.length !== 0
+      ? setIsSaveBtnDisabled(false)
+      : setIsSaveBtnDisabled(true);
+  }, [itemList]);
+
   const addItem = () => {
     let updatedList;
 
@@ -219,6 +239,7 @@ const InvoiceCreator = () => {
     const sanitizedPrice = parseFloat(price).toFixed(2);
     const sanitizedTax = parseFloat(vatAmount).toFixed(2);
     const sanitizedDiscount = parseFloat(discountAmount).toFixed(2);
+    const sanitizedAmount = parseFloat(amount).toFixed(2);
     const finalAmount = parseFloat(amount - discountAmount + vatAmount).toFixed(
       2,
     );
@@ -231,11 +252,11 @@ const InvoiceCreator = () => {
         Item: product,
         Quantity: quantity,
         Price: sanitizedPrice,
+        AmountExVat: sanitizedAmount,
         Discount: sanitizedDiscount,
         Tax: sanitizedTax,
         Amount: finalAmount,
       };
-      console.log("updated lis;", updatedList);
 
       setItemList(updatedList);
       setEditingItemIndex(null); // Reset editing index after updating
@@ -246,12 +267,12 @@ const InvoiceCreator = () => {
         Item: product,
         Quantity: quantity,
         Price: sanitizedPrice,
+        AmountExVat: sanitizedAmount,
         Discount: sanitizedDiscount,
         Tax: sanitizedTax,
         Amount: finalAmount,
       };
-      console.log("new item;", newItem);
-      // Add new item to the list
+
       setItemList([...itemList, newItem]);
     }
 
@@ -268,7 +289,7 @@ const InvoiceCreator = () => {
 
   const handleEditItem = (args) => {
     const itemData = args.rowData;
-    console.log(itemData);
+
     setEditingItemIndex(itemData.Line - 1); // Assuming 'Line' represents the item's index
     setProduct(itemData.Item);
     setQuantity(itemData.Quantity);
@@ -293,28 +314,49 @@ const InvoiceCreator = () => {
     }
   };
 
+  const cancelInvoice = () => {
+    setCreateInvoice(false);
+    setIsCancelClicked(false);
+    // Reset the input fields
+    setCustomer("");
+    setProduct("");
+    setQuantity("");
+    setPrice("");
+    setTax("");
+    setDiscountType("None");
+    setDiscountValue("");
+    setDiscountAmount(0);
+    setVatAmount(0);
+    setItemList([]);
+  };
+
+  const returnToInvoice = () => {
+    setIsCancelClicked(false);
+  };
+
   return (
     <div className=" bg-off-white w-11/12 min-h-screen absolute top-8 right-16 rounded-2xl">
       <div className="flex justify-between items-center">
-        <p className="font-bold text-4xl m-4">Create Invoice</p>
+        <p className="font-bold text-4xl m-4">
+          {invoiceDetails ? editTitle : newTitle}
+        </p>
         <div className="flex gap-4 mr-6">
           <Button
-            bgColor="#34d399"
-            text="Save"
+            bgColor={isSaveBtnDisabled ? "#9ca3af" : "#34d399"}
+            text={invoiceDetails ? "Update" : "Save"}
             icon={<IoIosSave />}
-            customFunc={() => {
-              handleSave(date, tranType, customer, itemList, totalAmount);
-              setCreateInvoice(false);
-            }}
-            width="6rem"
+            customFunc={customFunc}
+            width="7rem"
             height="3rem"
+            disabled={isSaveBtnDisabled}
           />
+
           <Button
             bgColor="#dc2626"
             text="Cancel"
             icon={<IoMdCloseCircle />}
             customFunc={() => {
-              setCreateInvoice(false);
+              setIsCancelClicked(true);
             }}
             width="6.5rem"
             height="3rem"
@@ -358,99 +400,16 @@ const InvoiceCreator = () => {
                 onChange={(value) => setTranType(value)}
               />
             </div>
-            <div className="mb-5">
-              <Autocomplete
-                disablePortal
-                value={customer}
-                onChange={(e, newValue) => setCustomer(newValue)}
-                id="customers"
-                options={customers}
-                //sx={{ width: 600 }}
-                sx={{
-                  width: 600,
-                  borderRadius: "0.5rem",
-                  boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-                  border: "1px solid #e5e7eb",
-                  "&:active": {
-                    outline: "4px solid transparent",
-                    outlineOffset: "2px",
-                  },
-                  "&:focus": {
-                    outline: "none",
-                    boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
-                  },
-                }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Select Customer" />
-                )}
-                isOptionEqualToValue={(option, value) =>
-                  option === value || value === ""
-                }
-              />
-            </div>
-            <div className="mb-8">
-              <div className="flex justify-between gap-4">
-                <span>
-                  <TextField
-                    id="outlined-multiline-flexible"
-                    label="Customer Details"
-                    multiline
-                    maxRows={4}
-                    //sx={{ width: 300 }}
-                    sx={{
-                      width: 300,
-                      borderRadius: "0.5rem",
-                      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-                      border: "1px solid #e5e7eb",
-                      "&:active": {
-                        outline: "4px solid transparent",
-                        outlineOffset: "2px",
-                      },
-                      "&:focus": {
-                        outline: "none",
-                        boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
-                      },
-                    }}
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                  />
-                </span>
-                <span>
-                  <TextField
-                    value={tin}
-                    onChange={(e) => setTin(e.target.value)}
-                    id="tin"
-                    label="TIN Number"
-                    sx={{
-                      borderRadius: "0.5rem",
-                      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-                      border: "1px solid #e5e7eb",
-                      "&:active": {
-                        outline: "4px solid transparent",
-                        outlineOffset: "2px",
-                      },
-                      "&:focus": {
-                        outline: "none",
-                        boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
-                      },
-                    }}
-                  />
-                </span>
-              </div>
-            </div>
-
-            <Divider>
-              <Chip label="Item Detail" size="large" />
-            </Divider>
-            {customer && (
+            {purchasesCreation ? (
               <div>
-                <div className="mb-5 mt-5">
+                <div className="mb-5">
                   <Autocomplete
                     disablePortal
-                    value={product}
-                    onChange={(e, newValue) => setProduct(newValue)}
-                    id="product"
-                    options={items}
+                    value={supplier}
+                    onChange={(e, newValue) => setSupplier(newValue)}
+                    id="suppliers"
+                    options={suppliers}
+                    //sx={{ width: 600 }}
                     sx={{
                       width: 600,
                       borderRadius: "0.5rem",
@@ -466,155 +425,331 @@ const InvoiceCreator = () => {
                       },
                     }}
                     renderInput={(params) => (
-                      <TextField {...params} label="Select Product" />
+                      <TextField {...params} label="Select Supplier" />
                     )}
                     isOptionEqualToValue={(option, value) =>
                       option === value || value === ""
                     }
                   />
                 </div>
-                <div className="flex justify-between ">
-                  <div className="flex flex-col gap-1">
-                    <label htmlFor="quantity">Quantity</label>
-                    <InputNumber
-                      value={quantity}
-                      style={{ height: 40, width: 120 }}
-                      min={1}
-                      onChange={(value) => setQuantity(value)}
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label htmlFor="price">Price</label>
-
-                    <InputNumber
-                      style={{ height: 40, width: 120 }}
-                      prefix="GHC"
-                      min={0.01}
-                      formatter={(value) =>
-                        `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                      }
-                      parser={(value) => value.replace(/[^0-9.]/g, "")}
-                      value={price}
-                      onChange={handlePriceInput}
-                    />
-                  </div>
-                  <div className="flex flex-col mb-8">
-                    <label htmlFor="">Tax</label>
-                    <Select
-                      value={tax}
-                      style={{ width: 120, height: 40 }}
-                      options={vat}
-                      onChange={(value) => setTax(value)}
-                    />
-                  </div>
-                  <div className="flex flex-col mb-8">
-                    <label htmlFor="">Discount</label>
-                    <Select
-                      style={{ height: 40, width: 120 }}
-                      options={discountList}
-                      onChange={(value) => setDiscountType(value)}
-                      value={discountType}
-                    />
+                <div className="mb-8">
+                  <div className="flex justify-between gap-4">
+                    <span>
+                      <TextField
+                        id="outlined-multiline-flexible"
+                        label="Supplier Details"
+                        multiline
+                        maxRows={4}
+                        //sx={{ width: 300 }}
+                        sx={{
+                          width: 300,
+                          borderRadius: "0.5rem",
+                          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                          border: "1px solid #e5e7eb",
+                          "&:active": {
+                            outline: "4px solid transparent",
+                            outlineOffset: "2px",
+                          },
+                          "&:focus": {
+                            outline: "none",
+                            boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
+                          },
+                        }}
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                      />
+                    </span>
+                    <span>
+                      <TextField
+                        value={tin}
+                        onChange={(e) => setTin(e.target.value)}
+                        id="tin"
+                        label="TIN Number"
+                        sx={{
+                          borderRadius: "0.5rem",
+                          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                          border: "1px solid #e5e7eb",
+                          "&:active": {
+                            outline: "4px solid transparent",
+                            outlineOffset: "2px",
+                          },
+                          "&:focus": {
+                            outline: "none",
+                            boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
+                          },
+                        }}
+                      />
+                    </span>
                   </div>
                 </div>
-                {discountType === "Selective" ? (
-                  <div className="flex flex-col gap-1 -mt-6 mb-6">
-                    <label htmlFor="price">Discount (%)</label>
-
-                    <InputNumber
-                      style={{ height: 40, width: 120 }}
-                      min={0}
-                      value={discountValue}
-                      onChange={(value) => setDiscountValue(value)}
-                    />
-                  </div>
-                ) : (
-                  ""
-                )}
-                <div className="flex justify-between mt-2">
-                  <div>
-                    {editingItemIndex !== null ? (
-                      <Button
-                        bgColor={isAddBtnDisabled ? "#9ca3af" : "#34d399"}
-                        text="Update Item"
-                        icon={<IoMdAddCircle />}
-                        customFunc={addItem}
-                        width="11rem"
-                        height="3rem"
-                        disabled={isAddBtnDisabled}
-                      />
-                    ) : (
-                      <Button
-                        bgColor={isAddBtnDisabled ? "#9ca3af" : "#34d399"}
-                        text="Add Item"
-                        icon={<IoMdAddCircle />}
-                        customFunc={addItem}
-                        width="11rem"
-                        height="3rem"
-                        disabled={isAddBtnDisabled}
-                      />
+              </div>
+            ) : (
+              <div>
+                <div className="mb-5">
+                  <Autocomplete
+                    disablePortal
+                    value={customer}
+                    onChange={(e, newValue) => setCustomer(newValue)}
+                    id="customers"
+                    options={customers}
+                    //sx={{ width: 600 }}
+                    sx={{
+                      width: 600,
+                      borderRadius: "0.5rem",
+                      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                      border: "1px solid #e5e7eb",
+                      "&:active": {
+                        outline: "4px solid transparent",
+                        outlineOffset: "2px",
+                      },
+                      "&:focus": {
+                        outline: "none",
+                        boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
+                      },
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Select Customer" />
                     )}
-                  </div>
-                  <div className="w-2/5 h-32 bg-white rounded-lg shadow-sm flex-col">
-                    <div className="flex justify-between p-1">
-                      <p>Amount Ex-VAT:</p>
-                      <p className="font-semibold"> {amount.toFixed(2)}</p>
-                    </div>
-                    <div className="flex justify-between p-1">
-                      <p>Discount:</p>
-                      <p className="font-semibold">
-                        {parseFloat(discountAmount).toFixed(2)}
-                      </p>
-                    </div>
-                    <div className="flex justify-between p-1">
-                      <p>VAT:</p>
-                      <p className="font-semibold">
-                        {parseFloat(vatAmount).toFixed(2)}
-                      </p>
-                    </div>
-                    <div className="flex justify-between p-1">
-                      <p className="text-xl"> Line Total:</p>
-                      <p className="font-semibold text-xl">
-                        {parseFloat(
-                          amount - discountAmount + vatAmount,
-                        ).toFixed(2)}
-                      </p>
-                    </div>
+                    isOptionEqualToValue={(option, value) =>
+                      option === value || value === ""
+                    }
+                  />
+                </div>
+                <div className="mb-8">
+                  <div className="flex justify-between gap-4">
+                    <span>
+                      <TextField
+                        id="outlined-multiline-flexible"
+                        label="Customer Details"
+                        multiline
+                        maxRows={4}
+                        //sx={{ width: 300 }}
+                        sx={{
+                          width: 300,
+                          borderRadius: "0.5rem",
+                          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                          border: "1px solid #e5e7eb",
+                          "&:active": {
+                            outline: "4px solid transparent",
+                            outlineOffset: "2px",
+                          },
+                          "&:focus": {
+                            outline: "none",
+                            boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
+                          },
+                        }}
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                      />
+                    </span>
+                    <span>
+                      <TextField
+                        value={tin}
+                        onChange={(e) => setTin(e.target.value)}
+                        id="tin"
+                        label="TIN Number"
+                        sx={{
+                          borderRadius: "0.5rem",
+                          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                          border: "1px solid #e5e7eb",
+                          "&:active": {
+                            outline: "4px solid transparent",
+                            outlineOffset: "2px",
+                          },
+                          "&:focus": {
+                            outline: "none",
+                            boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
+                          },
+                        }}
+                      />
+                    </span>
                   </div>
                 </div>
-                <TextField
-                  id="outlined-multiline-flexible"
-                  label="Add Remarks"
-                  value={remarks}
-                  onChange={(e) => setRemarks(e.target.value)}
-                  multiline
-                  maxRows={4}
-                  sx={{
-                    width: 300,
-                    marginTop: 4,
-                    //padding: "1rem", // p-4
-
-                    borderRadius: "0.5rem", // rounded-lg
-                    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)", // shadow-sm
-                    border: "1px solid #e5e7eb", // border border-gray-200
-                    "&:active": {
-                      outline: "4px solid transparent", // active:outline and active:outline-4
-                      outlineOffset: "2px", // outline-offset-2
-                    },
-                    "&:focus": {
-                      outline: "none", // focus:outline-none
-                      boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)", // focus:ring focus:ring-blue-300
-                    },
-                  }}
-                />
               </div>
             )}
+
+            <Divider>
+              <Chip label="Item Detail" size="large" />
+            </Divider>
+            {customer ||
+              (supplier && (
+                <div>
+                  <div className="mb-5 mt-5">
+                    <Autocomplete
+                      disablePortal
+                      value={product}
+                      onChange={(e, newValue) => setProduct(newValue)}
+                      id="product"
+                      options={items}
+                      sx={{
+                        width: 600,
+                        borderRadius: "0.5rem",
+                        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                        border: "1px solid #e5e7eb",
+                        "&:active": {
+                          outline: "4px solid transparent",
+                          outlineOffset: "2px",
+                        },
+                        "&:focus": {
+                          outline: "none",
+                          boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
+                        },
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Select Product" />
+                      )}
+                      isOptionEqualToValue={(option, value) =>
+                        option === value || value === ""
+                      }
+                    />
+                  </div>
+                  <div className="flex justify-between ">
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="quantity">Quantity</label>
+                      <InputNumber
+                        value={quantity}
+                        style={{ height: 40, width: 120 }}
+                        min={1}
+                        onChange={(value) => setQuantity(value)}
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor="price">Price</label>
+
+                      <InputNumber
+                        style={{ height: 40, width: 120 }}
+                        prefix="GHC"
+                        min={0.01}
+                        formatter={(value) =>
+                          `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
+                        parser={(value) => value.replace(/[^0-9.]/g, "")}
+                        value={price}
+                        onChange={handlePriceInput}
+                      />
+                    </div>
+                    <div className="flex flex-col mb-8">
+                      <label htmlFor="">Tax</label>
+                      <Select
+                        value={tax}
+                        style={{ width: 120, height: 40 }}
+                        options={vat}
+                        onChange={(value) => setTax(value)}
+                      />
+                    </div>
+                    <div className="flex flex-col mb-8">
+                      <label htmlFor="">Discount</label>
+                      <Select
+                        style={{ height: 40, width: 120 }}
+                        options={discountList}
+                        onChange={(value) => setDiscountType(value)}
+                        value={discountType}
+                      />
+                    </div>
+                  </div>
+                  {discountType === "Selective" ? (
+                    <div className="flex flex-col gap-1 -mt-6 mb-6">
+                      <label htmlFor="price">Discount (%)</label>
+
+                      <InputNumber
+                        style={{ height: 40, width: 120 }}
+                        min={0}
+                        value={discountValue}
+                        onChange={(value) => setDiscountValue(value)}
+                      />
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  <div className="flex justify-between mt-2">
+                    <div>
+                      {editingItemIndex !== null ? (
+                        <Button
+                          bgColor={isAddBtnDisabled ? "#9ca3af" : "#34d399"}
+                          text="Update Item"
+                          icon={<IoMdAddCircle />}
+                          customFunc={addItem}
+                          width="11rem"
+                          height="3rem"
+                          disabled={isAddBtnDisabled}
+                        />
+                      ) : (
+                        <Button
+                          bgColor={isAddBtnDisabled ? "#9ca3af" : "#34d399"}
+                          text="Add Item"
+                          icon={<IoMdAddCircle />}
+                          customFunc={addItem}
+                          width="11rem"
+                          height="3rem"
+                          disabled={isAddBtnDisabled}
+                        />
+                      )}
+                    </div>
+                    <div className="w-2/5 h-32 bg-white rounded-lg shadow-sm flex-col">
+                      <div className="flex justify-between p-1">
+                        <p>Amount Ex-VAT:</p>
+                        <p className="font-semibold"> {amount.toFixed(2)}</p>
+                      </div>
+                      <div className="flex justify-between p-1">
+                        <p>Discount:</p>
+                        <p className="font-semibold text-red-600">
+                          {parseFloat(discountAmount).toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="flex justify-between p-1">
+                        <p>VAT:</p>
+                        <p className="font-semibold">
+                          {parseFloat(vatAmount).toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="flex justify-between p-1">
+                        <p className="text-xl"> Line Total:</p>
+                        <p className="font-semibold text-xl">
+                          {parseFloat(
+                            amount - discountAmount + vatAmount,
+                          ).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <TextField
+                    id="outlined-multiline-flexible"
+                    label="Add Remarks"
+                    value={remarks}
+                    onChange={(e) => setRemarks(e.target.value)}
+                    multiline
+                    maxRows={4}
+                    sx={{
+                      width: 300,
+                      marginTop: 4,
+                      //padding: "1rem", // p-4
+
+                      borderRadius: "0.5rem", // rounded-lg
+                      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)", // shadow-sm
+                      border: "1px solid #e5e7eb", // border border-gray-200
+                      "&:active": {
+                        outline: "4px solid transparent", // active:outline and active:outline-4
+                        outlineOffset: "2px", // outline-offset-2
+                      },
+                      "&:focus": {
+                        outline: "none", // focus:outline-none
+                        boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)", // focus:ring focus:ring-blue-300
+                      },
+                    }}
+                  />
+                </div>
+              ))}
           </form>
         </div>
         <div className="flex flex-col w-full  bg-light-gray shadow-lg p-8 rounded-2xl">
           <div className="flex justify-between items-center p-3 bg-gray-200 rounded-md">
-            <div className="text-5xl font-bold">LOGO HERE</div>
+            <div className="text-5xl font-bold">
+              <div className="items-center gap-3 ml-3 mt-4 flex text-4xl font-extrabold tracking-tight dark:text-white text-slate-900">
+                <SiShopware />
+                <span>BillsGenie</span>
+              </div>
+            </div>
             <div>
               <p className="text-4xl font-bold">INVOICE</p>
               <div className="flex items-center gap-5">
@@ -680,7 +815,9 @@ const InvoiceCreator = () => {
                     ""
                   )}
                 </div>
-                <p className="text-lg font-bold ">{totalDiscount}</p>
+                <p className="text-lg font-bold text-red-600 ">
+                  {generalDiscAmount}
+                </p>
               </div>
               <div className="flex justify-between">
                 <p className="font-medium pl-5">VAT:</p>
@@ -694,6 +831,16 @@ const InvoiceCreator = () => {
           </div>
         </div>
       </div>
+      {isCancelClicked && (
+        <ConfirmModal
+          title="Invoice Cancellation"
+          info="Invoice creation will be cancelled. Are you sure?"
+          action1="Yes. Cancel"
+          action2="Return"
+          customFunc1={cancelInvoice}
+          customFunc2={returnToInvoice}
+        />
+      )}
     </div>
   );
 };

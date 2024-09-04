@@ -2,7 +2,7 @@ import React from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import { useStateContext } from "../contexts/ContextProvider.jsx";
 
-const Header = ({ category, title, customFunc }) => {
+const Header = ({ category, title, customFunc, btnTitle }) => {
   const { currentColor } = useStateContext();
 
   return (
@@ -23,7 +23,7 @@ const Header = ({ category, title, customFunc }) => {
           <span className="text-xl">
             <IoMdAddCircle />
           </span>
-          <span> Create Invoice</span>
+          <span> {btnTitle}</span>
         </button>
       </div>
     </div>

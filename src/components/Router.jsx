@@ -15,6 +15,8 @@ import {
   Line,
   Dashboard,
   Calendar,
+  SalesReturns,
+  Purchases,
 } from "../pages";
 
 function Router() {
@@ -47,51 +49,15 @@ function Router() {
           element: <ProtectedRoute element={<Orders />} />,
         },
         {
-          path: "/dashboard/create-invoice",
-          element: <ProtectedRoute element={<Orders />} />,
+          path: "/dashboard/sales-return",
+          element: <ProtectedRoute element={<SalesReturns />} />,
         },
         {
-          path: "/dashboard/employees",
-          element: <ProtectedRoute element={<Employees />} />,
-        },
-        {
-          path: "/dashboard/customers",
-          element: <ProtectedRoute element={<Customers />} />,
-        },
-        {
-          path: "/dashboard/kanban",
-          element: <ProtectedRoute element={<Kanban />} />,
-        },
-        {
-          path: "/dashboard/editor",
-          element: <ProtectedRoute element={<Editor />} />,
-        },
-        {
-          path: "/dashboard/calendar",
-          element: <ProtectedRoute element={<Calendar />} />,
-        },
-        {
-          path: "/dashboard/line",
-          element: <ProtectedRoute element={<Line />} />,
-        },
-        {
-          path: "/dashboard/area",
-          element: <ProtectedRoute element={<Area />} />,
+          path: "/dashboard/purchases",
+          element: <ProtectedRoute element={<Purchases />} />,
         },
       ],
     },
-    // {
-    //   path: "/Cart",
-    //   element: <Cart />,
-    // },
-    // {
-    //   path: "/Checkout",
-    //   element: <Checkout />,
-    // },
-    // {
-    //   path: "/Product",
-    //   element: <ProductPage />,
-    // },
   ]);
 
   return (

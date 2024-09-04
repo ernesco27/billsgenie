@@ -531,6 +531,7 @@ export const links = [
       },
       {
         name: "Sales Return",
+        url: "sales-return",
         icon: <IoMdContacts />,
       },
       // {
@@ -544,6 +545,7 @@ export const links = [
     links: [
       {
         name: "Purchases",
+        url: "purchases",
         icon: <AiOutlineCalendar />,
       },
       {

@@ -1,26 +1,27 @@
 import React, { useRef } from "react";
 
+import { Header, DataGrid, InvoiceTemplate } from "../components";
 import { InvoiceCreator } from "../components";
 import { useStateContext } from "../contexts/ContextProvider";
 
-import { Header, DataGrid, InvoiceTemplate } from "../components";
-
-const Orders = () => {
+const SalesReturns = () => {
   const invoiceRef = useRef();
 
   const {
     createInvoice,
     setCreateInvoice,
     ordersGrid,
-    salesList,
-    handleViewInvoice,
+
+    handleViewSalesReturn,
     selectedInvoice,
     setSelectedInvoice,
-    handleEditInvoice,
+    handleEditSalesReturn,
     selectedToEdit,
     setSelectedToEdit,
-    handleDeleteInvoice,
-    handleSave,
+    handleDeleteSalesReturn,
+    salesReturnsList,
+    setSalesReturnsList,
+    handleSaveSR,
     date,
     tranType,
     customer,
@@ -30,9 +31,10 @@ const Orders = () => {
     totalTax,
     subTotal,
     remarks,
+    returnsGrid,
   } = useStateContext();
 
-  const newInvoice = () => {
+  const newReturns = () => {
     setSelectedInvoice(null);
     setSelectedToEdit(null);
     setCreateInvoice(true);
@@ -42,25 +44,26 @@ const Orders = () => {
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white rounded-3xl shadow-lg">
       <Header
         category="Sales"
-        title="Sales Invoices"
-        customFunc={newInvoice}
-        btnTitle="Create Invoice"
+        title="Sales Returns"
+        btnTitle="New Return"
+        customFunc={newReturns}
       />
       <DataGrid
-        info={salesList}
-        columns={ordersGrid}
-        handleViewInvoice={handleViewInvoice}
-        handleEditInvoice={handleEditInvoice}
-        handleDeleteInvoice={handleDeleteInvoice}
+        info={salesReturnsList}
+        columns={returnsGrid}
+        handleViewInvoice={handleViewSalesReturn}
+        handleEditInvoice={handleEditSalesReturn}
+        handleDeleteInvoice={handleDeleteSalesReturn}
       />
+
       {createInvoice && (
         <InvoiceCreator
           invoiceDetails={selectedToEdit}
-          newTitle="Create Invoice"
-          editTitle="Edit Invoice"
-          previewTitle="INVOICE"
+          newTitle="Create Sales Return"
+          editTitle="Edit Sales Return"
+          previewTitle="RETURNS"
           customFunc={() =>
-            handleSave(
+            handleSaveSR(
               date,
               tranType,
               customer,
@@ -83,4 +86,4 @@ const Orders = () => {
   );
 };
 
-export default Orders;
+export default SalesReturns;

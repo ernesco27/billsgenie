@@ -17,3 +17,5 @@ export { default as Stacked } from "./Charts/Stacked";
 export { default as LoginPage } from "./LoginPage";
 export { default as ErrorPage } from "./ErrorPage";
 export { default as Dashboard } from "./Dashboard";
+export { default as SalesReturns } from "./SalesReturns";
+export { default as Purchases } from "./Purchases";

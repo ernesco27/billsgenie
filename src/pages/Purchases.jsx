@@ -5,14 +5,14 @@ import { useStateContext } from "../contexts/ContextProvider";
 
 import { Header, DataGrid, InvoiceTemplate } from "../components";
 
-const Orders = () => {
+const Purchases = () => {
   const invoiceRef = useRef();
 
   const {
     createInvoice,
     setCreateInvoice,
-    ordersGrid,
-    salesList,
+    purchasesGrid,
+    purchasesList,
     handleViewInvoice,
     selectedInvoice,
     setSelectedInvoice,
@@ -20,35 +20,37 @@ const Orders = () => {
     selectedToEdit,
     setSelectedToEdit,
     handleDeleteInvoice,
-    handleSave,
+    handleSavePurchases,
     date,
     tranType,
-    customer,
+    supplier,
     itemList,
     totalAmount,
     generalDiscAmount,
     totalTax,
     subTotal,
     remarks,
+    setPurchasesCreation,
   } = useStateContext();
 
   const newInvoice = () => {
     setSelectedInvoice(null);
     setSelectedToEdit(null);
     setCreateInvoice(true);
+    setPurchasesCreation(true);
   };
 
   return (
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white rounded-3xl shadow-lg">
       <Header
-        category="Sales"
-        title="Sales Invoices"
+        category="Purchases"
+        title="Purchases Invoices"
         customFunc={newInvoice}
         btnTitle="Create Invoice"
       />
       <DataGrid
-        info={salesList}
-        columns={ordersGrid}
+        info={purchasesList}
+        columns={purchasesGrid}
         handleViewInvoice={handleViewInvoice}
         handleEditInvoice={handleEditInvoice}
         handleDeleteInvoice={handleDeleteInvoice}
@@ -60,10 +62,10 @@ const Orders = () => {
           editTitle="Edit Invoice"
           previewTitle="INVOICE"
           customFunc={() =>
-            handleSave(
+            handleSavePurchases(
               date,
               tranType,
-              customer,
+              supplier,
               itemList,
               totalAmount,
               generalDiscAmount,
@@ -83,4 +85,4 @@ const Orders = () => {
   );
 };
 
-export default Orders;
+export default Purchases;
