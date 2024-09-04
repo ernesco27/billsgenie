@@ -550,6 +550,7 @@ export const links = [
       },
       {
         name: "Purchases Return",
+        url: "purchases-return",
         icon: <BsKanban />,
       },
       // {

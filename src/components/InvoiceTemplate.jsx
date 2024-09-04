@@ -42,26 +42,49 @@ const InvoiceTemplate = ({ invoiceDetails, customFunc }) => {
                   <span>BillsGenie</span>
                 </div>
                 <div className="ml-3 mt-4 flex text-3xl font-extrabold tracking-tight dark:text-white text-slate-900">
-                  {invoiceDetails.ReturnNo ? "SALES RETURNS" : "SALES INVOICE"}
+                  {invoiceDetails.InvoiceNo && invoiceDetails.CustomerName
+                    ? "SALES INVOICES"
+                    : invoiceDetails.ReturnNo && invoiceDetails.CustomerName
+                    ? "SALES RETURNS"
+                    : invoiceDetails.InvoiceNo && invoiceDetails.SupplierName
+                    ? "PURCHASES INVOICE"
+                    : "PURCHASES RETURN"}
                 </div>
               </div>
               <div className="mx-3 mt-16 flex justify-between">
                 <div className="flex flex-col gap-4 ">
                   <p className="text-lg font-bold invoice-content">
-                    BILLED TO:
+                    {invoiceDetails.CustomerName ? " BILLED TO:" : "PAID TO:"}
                   </p>
                   <div className="flex flex-col gap-2 bg-gray-100 p-4 rounded-lg">
                     <div className="flex gap-4 invoice-content">
-                      <p className="font-bold">CUSTOMER NAME:</p>
-                      <p>{invoiceDetails.CustomerName}</p>
+                      <p className="font-bold">
+                        {invoiceDetails.CustomerName
+                          ? "CUSTOMER NAME:"
+                          : "SUPPLIER NAME:"}
+                      </p>
+                      <p>
+                        {invoiceDetails.CustomerName ||
+                          invoiceDetails.SupplierName}
+                      </p>
                     </div>
                     <div className="flex gap-4 invoice-content">
-                      <p className="font-bold">CUSTOMER TIN:</p>
-                      <p>{invoiceDetails.CustomerTIN}</p>
+                      <p className="font-bold">
+                        {invoiceDetails.CustomerName
+                          ? "CUSTOMER TIN:"
+                          : "SUPPLIER TIN"}
+                      </p>
+                      <p>
+                        {invoiceDetails.CustomerTIN ||
+                          invoiceDetails.SupplierTIN}
+                      </p>
                     </div>
                     <div className="flex gap-4 invoice-content">
                       <p className="font-bold">ADDRESS:</p>
-                      <p>{invoiceDetails.CustomerAddress}</p>
+                      <p>
+                        {invoiceDetails.CustomerAddress ||
+                          invoiceDetails.SupplierAddress}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -71,13 +94,13 @@ const InvoiceTemplate = ({ invoiceDetails, customFunc }) => {
                       {invoiceDetails.ReturnNo ? "RETURN NO:" : "INVOICE NO:"}
                     </p>
                     <p className="text-lg invoice-content">
-                      {invoiceDetails.ReturnNo}
+                      {invoiceDetails.ReturnNo || invoiceDetails.InvoiceNo}
                     </p>
                   </div>
                   <div className="flex justify-between ">
                     <p className="text-lg font-bold invoice-content">DATE:</p>
                     <p className="text-lg invoice-content">
-                      {invoiceDetails.ReturnDate}
+                      {invoiceDetails.ReturnDate || invoiceDetails.OrderDate}
                     </p>
                   </div>
                 </div>

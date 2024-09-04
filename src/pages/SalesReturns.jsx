@@ -32,12 +32,14 @@ const SalesReturns = () => {
     subTotal,
     remarks,
     returnsGrid,
+    setPurchasesCreation,
   } = useStateContext();
 
   const newReturns = () => {
     setSelectedInvoice(null);
     setSelectedToEdit(null);
     setCreateInvoice(true);
+    setPurchasesCreation(false);
   };
 
   return (

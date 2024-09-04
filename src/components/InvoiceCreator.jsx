@@ -130,6 +130,7 @@ const InvoiceCreator = ({
     generalDiscAmount,
     handleSave,
     purchasesCreation,
+    setPurchasesCreation,
   } = useStateContext();
 
   const [editingItemIndex, setEditingItemIndex] = useState(null);
@@ -141,13 +142,17 @@ const InvoiceCreator = ({
 
   useEffect(() => {
     console.log("invoice details:", invoiceDetails);
-    if (invoiceDetails) {
+    if (invoiceDetails && invoiceDetails.CustomerName) {
       //setDate(invoiceDetails.OrderDate);
       setTranType(invoiceDetails.TranType);
       setCustomer(invoiceDetails.CustomerName);
       //setAddress(invoiceDetails.address);
       setItemList(invoiceDetails.Items);
       // Set other fields as needed
+    } else if (invoiceDetails && invoiceDetails.SupplierName) {
+      setTranType(invoiceDetails.TranType);
+      setSupplier(invoiceDetails.SupplierName);
+      setItemList(invoiceDetails.Items);
     }
   }, [invoiceDetails]);
 
@@ -317,6 +322,7 @@ const InvoiceCreator = ({
   const cancelInvoice = () => {
     setCreateInvoice(false);
     setIsCancelClicked(false);
+    setPurchasesCreation(false);
     // Reset the input fields
     setCustomer("");
     setProduct("");
@@ -571,175 +577,174 @@ const InvoiceCreator = ({
             <Divider>
               <Chip label="Item Detail" size="large" />
             </Divider>
-            {customer ||
-              (supplier && (
-                <div>
-                  <div className="mb-5 mt-5">
-                    <Autocomplete
-                      disablePortal
-                      value={product}
-                      onChange={(e, newValue) => setProduct(newValue)}
-                      id="product"
-                      options={items}
-                      sx={{
-                        width: 600,
-                        borderRadius: "0.5rem",
-                        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-                        border: "1px solid #e5e7eb",
-                        "&:active": {
-                          outline: "4px solid transparent",
-                          outlineOffset: "2px",
-                        },
-                        "&:focus": {
-                          outline: "none",
-                          boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
-                        },
-                      }}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Select Product" />
-                      )}
-                      isOptionEqualToValue={(option, value) =>
-                        option === value || value === ""
-                      }
-                    />
-                  </div>
-                  <div className="flex justify-between ">
-                    <div className="flex flex-col gap-1">
-                      <label htmlFor="quantity">Quantity</label>
-                      <InputNumber
-                        value={quantity}
-                        style={{ height: 40, width: 120 }}
-                        min={1}
-                        onChange={(value) => setQuantity(value)}
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                      <label htmlFor="price">Price</label>
-
-                      <InputNumber
-                        style={{ height: 40, width: 120 }}
-                        prefix="GHC"
-                        min={0.01}
-                        formatter={(value) =>
-                          `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                        }
-                        parser={(value) => value.replace(/[^0-9.]/g, "")}
-                        value={price}
-                        onChange={handlePriceInput}
-                      />
-                    </div>
-                    <div className="flex flex-col mb-8">
-                      <label htmlFor="">Tax</label>
-                      <Select
-                        value={tax}
-                        style={{ width: 120, height: 40 }}
-                        options={vat}
-                        onChange={(value) => setTax(value)}
-                      />
-                    </div>
-                    <div className="flex flex-col mb-8">
-                      <label htmlFor="">Discount</label>
-                      <Select
-                        style={{ height: 40, width: 120 }}
-                        options={discountList}
-                        onChange={(value) => setDiscountType(value)}
-                        value={discountType}
-                      />
-                    </div>
-                  </div>
-                  {discountType === "Selective" ? (
-                    <div className="flex flex-col gap-1 -mt-6 mb-6">
-                      <label htmlFor="price">Discount (%)</label>
-
-                      <InputNumber
-                        style={{ height: 40, width: 120 }}
-                        min={0}
-                        value={discountValue}
-                        onChange={(value) => setDiscountValue(value)}
-                      />
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                  <div className="flex justify-between mt-2">
-                    <div>
-                      {editingItemIndex !== null ? (
-                        <Button
-                          bgColor={isAddBtnDisabled ? "#9ca3af" : "#34d399"}
-                          text="Update Item"
-                          icon={<IoMdAddCircle />}
-                          customFunc={addItem}
-                          width="11rem"
-                          height="3rem"
-                          disabled={isAddBtnDisabled}
-                        />
-                      ) : (
-                        <Button
-                          bgColor={isAddBtnDisabled ? "#9ca3af" : "#34d399"}
-                          text="Add Item"
-                          icon={<IoMdAddCircle />}
-                          customFunc={addItem}
-                          width="11rem"
-                          height="3rem"
-                          disabled={isAddBtnDisabled}
-                        />
-                      )}
-                    </div>
-                    <div className="w-2/5 h-32 bg-white rounded-lg shadow-sm flex-col">
-                      <div className="flex justify-between p-1">
-                        <p>Amount Ex-VAT:</p>
-                        <p className="font-semibold"> {amount.toFixed(2)}</p>
-                      </div>
-                      <div className="flex justify-between p-1">
-                        <p>Discount:</p>
-                        <p className="font-semibold text-red-600">
-                          {parseFloat(discountAmount).toFixed(2)}
-                        </p>
-                      </div>
-                      <div className="flex justify-between p-1">
-                        <p>VAT:</p>
-                        <p className="font-semibold">
-                          {parseFloat(vatAmount).toFixed(2)}
-                        </p>
-                      </div>
-                      <div className="flex justify-between p-1">
-                        <p className="text-xl"> Line Total:</p>
-                        <p className="font-semibold text-xl">
-                          {parseFloat(
-                            amount - discountAmount + vatAmount,
-                          ).toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <TextField
-                    id="outlined-multiline-flexible"
-                    label="Add Remarks"
-                    value={remarks}
-                    onChange={(e) => setRemarks(e.target.value)}
-                    multiline
-                    maxRows={4}
+            {(customer || supplier) && (
+              <div>
+                <div className="mb-5 mt-5">
+                  <Autocomplete
+                    disablePortal
+                    value={product}
+                    onChange={(e, newValue) => setProduct(newValue)}
+                    id="product"
+                    options={items}
                     sx={{
-                      width: 300,
-                      marginTop: 4,
-                      //padding: "1rem", // p-4
-
-                      borderRadius: "0.5rem", // rounded-lg
-                      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)", // shadow-sm
-                      border: "1px solid #e5e7eb", // border border-gray-200
+                      width: 600,
+                      borderRadius: "0.5rem",
+                      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                      border: "1px solid #e5e7eb",
                       "&:active": {
-                        outline: "4px solid transparent", // active:outline and active:outline-4
-                        outlineOffset: "2px", // outline-offset-2
+                        outline: "4px solid transparent",
+                        outlineOffset: "2px",
                       },
                       "&:focus": {
-                        outline: "none", // focus:outline-none
-                        boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)", // focus:ring focus:ring-blue-300
+                        outline: "none",
+                        boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
                       },
                     }}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Select Product" />
+                    )}
+                    isOptionEqualToValue={(option, value) =>
+                      option === value || value === ""
+                    }
                   />
                 </div>
-              ))}
+                <div className="flex justify-between ">
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="quantity">Quantity</label>
+                    <InputNumber
+                      value={quantity}
+                      style={{ height: 40, width: 120 }}
+                      min={1}
+                      onChange={(value) => setQuantity(value)}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="price">Price</label>
+
+                    <InputNumber
+                      style={{ height: 40, width: 120 }}
+                      prefix="GHC"
+                      min={0.01}
+                      formatter={(value) =>
+                        `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                      }
+                      parser={(value) => value.replace(/[^0-9.]/g, "")}
+                      value={price}
+                      onChange={handlePriceInput}
+                    />
+                  </div>
+                  <div className="flex flex-col mb-8">
+                    <label htmlFor="">Tax</label>
+                    <Select
+                      value={tax}
+                      style={{ width: 120, height: 40 }}
+                      options={vat}
+                      onChange={(value) => setTax(value)}
+                    />
+                  </div>
+                  <div className="flex flex-col mb-8">
+                    <label htmlFor="">Discount</label>
+                    <Select
+                      style={{ height: 40, width: 120 }}
+                      options={discountList}
+                      onChange={(value) => setDiscountType(value)}
+                      value={discountType}
+                    />
+                  </div>
+                </div>
+                {discountType === "Selective" ? (
+                  <div className="flex flex-col gap-1 -mt-6 mb-6">
+                    <label htmlFor="price">Discount (%)</label>
+
+                    <InputNumber
+                      style={{ height: 40, width: 120 }}
+                      min={0}
+                      value={discountValue}
+                      onChange={(value) => setDiscountValue(value)}
+                    />
+                  </div>
+                ) : (
+                  ""
+                )}
+                <div className="flex justify-between mt-2">
+                  <div>
+                    {editingItemIndex !== null ? (
+                      <Button
+                        bgColor={isAddBtnDisabled ? "#9ca3af" : "#34d399"}
+                        text="Update Item"
+                        icon={<IoMdAddCircle />}
+                        customFunc={addItem}
+                        width="11rem"
+                        height="3rem"
+                        disabled={isAddBtnDisabled}
+                      />
+                    ) : (
+                      <Button
+                        bgColor={isAddBtnDisabled ? "#9ca3af" : "#34d399"}
+                        text="Add Item"
+                        icon={<IoMdAddCircle />}
+                        customFunc={addItem}
+                        width="11rem"
+                        height="3rem"
+                        disabled={isAddBtnDisabled}
+                      />
+                    )}
+                  </div>
+                  <div className="w-2/5 h-32 bg-white rounded-lg shadow-sm flex-col">
+                    <div className="flex justify-between p-1">
+                      <p>Amount Ex-VAT:</p>
+                      <p className="font-semibold"> {amount.toFixed(2)}</p>
+                    </div>
+                    <div className="flex justify-between p-1">
+                      <p>Discount:</p>
+                      <p className="font-semibold text-red-600">
+                        {parseFloat(discountAmount).toFixed(2)}
+                      </p>
+                    </div>
+                    <div className="flex justify-between p-1">
+                      <p>VAT:</p>
+                      <p className="font-semibold">
+                        {parseFloat(vatAmount).toFixed(2)}
+                      </p>
+                    </div>
+                    <div className="flex justify-between p-1">
+                      <p className="text-xl"> Line Total:</p>
+                      <p className="font-semibold text-xl">
+                        {parseFloat(
+                          amount - discountAmount + vatAmount,
+                        ).toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <TextField
+                  id="outlined-multiline-flexible"
+                  label="Add Remarks"
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                  multiline
+                  maxRows={4}
+                  sx={{
+                    width: 300,
+                    marginTop: 4,
+                    //padding: "1rem", // p-4
+
+                    borderRadius: "0.5rem", // rounded-lg
+                    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)", // shadow-sm
+                    border: "1px solid #e5e7eb", // border border-gray-200
+                    "&:active": {
+                      outline: "4px solid transparent", // active:outline and active:outline-4
+                      outlineOffset: "2px", // outline-offset-2
+                    },
+                    "&:focus": {
+                      outline: "none", // focus:outline-none
+                      boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)", // focus:ring focus:ring-blue-300
+                    },
+                  }}
+                />
+              </div>
+            )}
           </form>
         </div>
         <div className="flex flex-col w-full  bg-light-gray shadow-lg p-8 rounded-2xl">

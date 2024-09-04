@@ -13,13 +13,13 @@ const Purchases = () => {
     setCreateInvoice,
     purchasesGrid,
     purchasesList,
-    handleViewInvoice,
+    handleViewPurchases,
     selectedInvoice,
     setSelectedInvoice,
-    handleEditInvoice,
+    handleEditPurchases,
     selectedToEdit,
     setSelectedToEdit,
-    handleDeleteInvoice,
+    handleDeletePurchases,
     handleSavePurchases,
     date,
     tranType,
@@ -51,9 +51,9 @@ const Purchases = () => {
       <DataGrid
         info={purchasesList}
         columns={purchasesGrid}
-        handleViewInvoice={handleViewInvoice}
-        handleEditInvoice={handleEditInvoice}
-        handleDeleteInvoice={handleDeleteInvoice}
+        handleViewInvoice={handleViewPurchases}
+        handleEditInvoice={handleEditPurchases}
+        handleDeleteInvoice={handleDeletePurchases}
       />
       {createInvoice && (
         <InvoiceCreator

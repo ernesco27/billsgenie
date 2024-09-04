@@ -19,3 +19,4 @@ export { default as ErrorPage } from "./ErrorPage";
 export { default as Dashboard } from "./Dashboard";
 export { default as SalesReturns } from "./SalesReturns";
 export { default as Purchases } from "./Purchases";
+export { default as PurchasesReturn } from "./PurchasesReturn";

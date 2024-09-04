@@ -17,6 +17,7 @@ import {
   Calendar,
   SalesReturns,
   Purchases,
+  PurchasesReturn,
 } from "../pages";
 
 function Router() {
@@ -55,6 +56,10 @@ function Router() {
         {
           path: "/dashboard/purchases",
           element: <ProtectedRoute element={<Purchases />} />,
+        },
+        {
+          path: "/dashboard/purchases-return",
+          element: <ProtectedRoute element={<PurchasesReturn />} />,
         },
       ],
     },

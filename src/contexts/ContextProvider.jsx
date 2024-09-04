@@ -125,6 +125,24 @@ const ContextProvider = ({ children }) => {
 
   const [editingIndex, setEditingIndex] = useState(null);
 
+  const handleViewPurchases = (invoiceNo) => {
+    const invoice = purchasesList.find(
+      (purchase) => purchase.InvoiceNo === invoiceNo,
+    );
+    if (invoice) {
+      setSelectedInvoice(invoice);
+    }
+  };
+
+  const handleViewPurchasesReturn = (returnNo) => {
+    const returned = purchasesReturnsList.find(
+      (returns) => returns.ReturnNo === returnNo,
+    );
+    if (returned) {
+      setSelectedInvoice(returned);
+    }
+  };
+
   const handleViewInvoice = (invoiceNo) => {
     const invoice = salesList.find((sale) => sale.InvoiceNo === invoiceNo);
     if (invoice) {
@@ -139,6 +157,24 @@ const ContextProvider = ({ children }) => {
     if (returned) {
       setSelectedInvoice(returned);
     }
+  };
+
+  const handleEditPurchases = (invoiceNo) => {
+    const invoiceToEdit = purchasesList.find(
+      (invoice) => invoice.InvoiceNo === invoiceNo,
+    );
+
+    setSelectedToEdit(invoiceToEdit);
+    setCreateInvoice(true);
+  };
+
+  const handleEditPurchasesReturn = (returnNo) => {
+    const purchasesReturnToEdit = purchasesReturnsList.find(
+      (returned) => returned.ReturnNo === returnNo,
+    );
+
+    setSelectedToEdit(purchasesReturnToEdit);
+    setCreateInvoice(true);
   };
 
   const handleEditInvoice = (invoiceNo) => {
@@ -157,6 +193,22 @@ const ContextProvider = ({ children }) => {
 
     setSelectedToEdit(salesReturnToEdit);
     setCreateInvoice(true);
+  };
+
+  const handleDeletePurchases = (invoiceNo) => {
+    const updatedList = purchasesList.filter(
+      (invoice) => invoice.InvoiceNo !== invoiceNo,
+    );
+
+    setPurchasesList(updatedList);
+  };
+
+  const handleDeletePurchasesReturn = (returnNo) => {
+    const updatedList = purchasesReturnsList.filter(
+      (returned) => returned.ReturnNo !== returnNo,
+    );
+
+    setPurchasesReturnsList(updatedList);
   };
 
   const handleDeleteInvoice = (invoiceNo) => {
@@ -404,6 +456,89 @@ const ContextProvider = ({ children }) => {
       };
 
       setPurchasesList([newPurchase, ...purchasesList]);
+    }
+
+    // Reset the input fields
+    setSupplier("");
+    setProduct("");
+    setQuantity("");
+    setPrice("");
+    setTax("");
+    setDiscountType("None");
+    setDiscountValue("");
+    setDiscountAmount(0);
+    setVatAmount(0);
+    setItemList([]);
+    setCreateInvoice(false); // Close the invoice creation modal
+  };
+
+  const handleSavePR = (
+    date,
+    trantype,
+    supplier,
+    items,
+    amount,
+    generalDiscAmount,
+    totalTax,
+    subTotal,
+    remarks,
+  ) => {
+    if (selectedToEdit) {
+      // Updating an existing invoice
+      const updatedPurchasesReturnsList = purchasesReturnsList.map((returns) =>
+        returns.ReturnNo === selectedToEdit.ReturnNo
+          ? {
+              ...returns,
+              ReturnDate: date.format("DD/MM/YYYY"),
+              TranType: trantype,
+              SupplierName: supplier,
+              Items: items,
+              TotalAmount: amount,
+              SubTotal: subTotal,
+              TotalDiscount: generalDiscAmount,
+              TotalTax: totalTax,
+              Remarks: remarks,
+            }
+          : returns,
+      );
+
+      console.log("returns:", updatedPurchasesReturnsList);
+
+      setPurchasesReturnsList(updatedPurchasesReturnsList);
+      setSelectedToEdit(null); // Reset the selectedToEdit state after updating
+    } else {
+      // Creating a new invoice
+      const sectionInitials = "PR";
+      const currentYear = new Date().getFullYear();
+
+      const lastReturnNo = purchasesReturnsList.length
+        ? purchasesReturnsList[0].ReturnNo
+        : `${sectionInitials}${currentYear}00`;
+
+      const lastReturnNumber = parseInt(lastReturnNo.slice(-2), 10);
+      const nextReturnNumber = (lastReturnNumber + 1)
+        .toString()
+        .padStart(2, "0");
+
+      const newReturnNo = `${sectionInitials}${currentYear}${nextReturnNumber}`;
+
+      const newPurchasesReturn = {
+        Id: purchasesReturnsList.length
+          ? Math.max(...purchasesReturnsList.map((item, index) => index)) + 2
+          : 1,
+        ReturnDate: date.format("DD/MM/YYYY"),
+        ReturnNo: newReturnNo,
+        TranType: trantype,
+        SupplierName: supplier,
+        Items: items,
+        TotalAmount: amount,
+        SubTotal: subTotal,
+        TotalDiscount: generalDiscAmount,
+        TotalTax: totalTax,
+        Remarks: remarks,
+      };
+
+      setPurchasesReturnsList([newPurchasesReturn, ...purchasesReturnsList]);
     }
 
     // Reset the input fields
@@ -806,12 +941,88 @@ const ContextProvider = ({ children }) => {
     },
   ];
 
+  const purchasesReturnsGrid = [
+    {
+      field: "ReturnDate",
+      headerText: "DATE",
+      width: "100",
+      textAlign: "Center",
+    },
+    {
+      field: "ReturnNo",
+      headerText: " RETURN NO.",
+      width: "150",
+      textAlign: "Center",
+    },
+    {
+      field: "SupplierName",
+      headerText: "SUPPLIER NAME",
+      width: "150",
+      textAlign: "Center",
+    },
+    {
+      field: "TotalAmount",
+      headerText: "TOTAL AMOUNT",
+      format: "C2",
+      textAlign: "Center",
+      editType: "numericedit",
+      width: "100",
+    },
+    {
+      field: "TranType",
+      headerText: "TRANS. TYPE",
+      width: "100",
+      textAlign: "Center",
+    },
+    {
+      field: "Action",
+      headerText: "ACTION",
+      width: "150",
+      textAlign: "Center",
+      commands:
+        userRole === "admin"
+          ? [
+              {
+                type: "View",
+                buttonOption: {
+                  //cssClass: "e-flat e-medium",
+                  iconCss: "e-eye e-icons",
+                },
+              },
+              {
+                type: "Edit",
+                buttonOption: {
+                  //cssClass: "e-flat",
+                  iconCss: "e-edit e-icons",
+                },
+              },
+              {
+                type: "Delete",
+                buttonOption: {
+                  //cssClass: "e-flat",
+                  iconCss: "e-icons e-trash ",
+                },
+              },
+            ]
+          : [
+              {
+                type: "View",
+                buttonOption: {
+                  cssClass: "e-flat",
+                  iconCss: "e-view e-icons",
+                },
+              },
+            ],
+    },
+  ];
+
   return (
     <StateContext.Provider
       value={{
         ordersGrid,
         returnsGrid,
         purchasesGrid,
+        purchasesReturnsGrid,
         activeMenu,
         setActiveMenu,
         isClicked,
@@ -892,11 +1103,20 @@ const ContextProvider = ({ children }) => {
         handleEditSalesReturn,
         handleViewSalesReturn,
         handleSaveSR,
+        handleSavePR,
         purchasesList,
+        purchasesReturnsList,
+        setPurchasesReturnsList,
         setPurchasesList,
         handleSavePurchases,
         purchasesCreation,
         setPurchasesCreation,
+        handleDeletePurchasesReturn,
+        handleEditPurchasesReturn,
+        handleViewPurchasesReturn,
+        handleDeletePurchases,
+        handleEditPurchases,
+        handleViewPurchases,
       }}
     >
       {children}
