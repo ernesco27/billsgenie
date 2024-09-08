@@ -19,3 +19,4 @@ export { default as DataGrid } from "./DataGrid";
 export { default as InvoiceCreator } from "./InvoiceCreator";
 export { default as ConfirmModal } from "./ConfirmModal";
 export { default as InvoiceTemplate } from "./InvoiceTemplate";
+export { default as ProductModal } from "./ProductModal";

@@ -18,6 +18,12 @@ import {
   SalesReturns,
   Purchases,
   PurchasesReturn,
+  Warehouse,
+  InventoryTracker,
+  StockMovement,
+  ProductManagement,
+  WarehouseManagement,
+  SupplierManagement,
 } from "../pages";
 
 function Router() {
@@ -60,6 +66,36 @@ function Router() {
         {
           path: "/dashboard/purchases-return",
           element: <ProtectedRoute element={<PurchasesReturn />} />,
+        },
+        {
+          path: "/dashboard/stock-management",
+          element: <ProtectedRoute element={<Warehouse />} />,
+          children: [
+            // {
+            //   index: true,
+            //   element: <ProtectedRoute element={<Warehouse />} />,
+            // },
+            {
+              path: "track-inventory",
+              element: <ProtectedRoute element={<InventoryTracker />} />,
+            },
+            {
+              path: "stock-movement",
+              element: <ProtectedRoute element={<StockMovement />} />,
+            },
+            {
+              path: "product-management",
+              element: <ProtectedRoute element={<ProductManagement />} />,
+            },
+            {
+              path: "warehouse-management",
+              element: <ProtectedRoute element={<WarehouseManagement />} />,
+            },
+            {
+              path: "supplier-management",
+              element: <ProtectedRoute element={<SupplierManagement />} />,
+            },
+          ],
         },
       ],
     },

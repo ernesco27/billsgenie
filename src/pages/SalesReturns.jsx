@@ -10,7 +10,7 @@ const SalesReturns = () => {
   const {
     createInvoice,
     setCreateInvoice,
-    ordersGrid,
+    //ordersGrid,
 
     handleViewSalesReturn,
     selectedInvoice,

@@ -569,6 +569,7 @@ export const links = [
     links: [
       {
         name: "Stock Management",
+        url: "stock-management",
         icon: <AiOutlineStock />,
       },
       // {

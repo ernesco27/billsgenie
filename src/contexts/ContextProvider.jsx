@@ -1,6 +1,7 @@
 import react, { createContext, useContext, useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { CompassOutlined } from "@ant-design/icons";
+import { inventoryTrackingGrid } from "../data/Grids";
 
 const StateContext = createContext();
 
@@ -11,6 +12,7 @@ const initialState = {
   notification: false,
 };
 
+const InitialWarehouses = ["Room 1", "Room 2", "Room 3"];
 const customers = ["Cash", "MaxMart", "Shoprite", "Melcom"];
 const suppliers = ["Cash", "Izako", "Harimat", "G-cube"];
 const items = [
@@ -74,6 +76,69 @@ const itemsGrid = [
 
 const discountList = ["None", "Selective", "General"];
 
+// const inventoryTrackingGrid = [
+//   {
+//     field: "No",
+//     headerText: "NO",
+//     width: "100",
+//     textAlign: "Center",
+//   },
+//   {
+//     field: "ProductName",
+//     headerText: "PRODUCT NAME",
+//     width: "150",
+//     textAlign: "Center",
+//   },
+
+//   {
+//     field: "TotalQuantity",
+//     headerText: "TOTAL QUANTITY",
+//     textAlign: "Center",
+//     editType: "numericedit",
+//     width: "100",
+//   },
+// ];
+
+// const stockMovementGrid = [
+//   {
+//     field: "Date",
+//     headerText: "DATE",
+//     width: "100",
+//     textAlign: "Center",
+//   },
+//   {
+//     field: "ReferenceNo",
+//     headerText: "REFERENCE NO.",
+//     width: "150",
+//     textAlign: "Center",
+//   },
+
+//   {
+//     field: "Warehouse",
+//     headerText: "WAREHOUSE",
+//     textAlign: "Center",
+//     width: "100",
+//   },
+//   {
+//     field: "To",
+//     headerText: "TO",
+//     textAlign: "Center",
+//     width: "100",
+//   },
+//   {
+//     field: "QtyIn",
+//     headerText: "QTY IN",
+//     textAlign: "Center",
+//     width: "100",
+//   },
+//   {
+//     field: "QtyOut",
+//     headerText: "QTY OUT",
+//     textAlign: "Center",
+//     width: "100",
+//   },
+// ];
+
 const ContextProvider = ({ children }) => {
   const [activeMenu, setActiveMenu] = useState(true);
   const [openCard, setOpenCard] = useState(false);
@@ -124,6 +189,23 @@ const ContextProvider = ({ children }) => {
   const [selectedToEdit, setSelectedToEdit] = useState(null);
 
   const [editingIndex, setEditingIndex] = useState(null);
+
+  const [warehouses, setWarehouses] = useState(InitialWarehouses);
+  const [gridColumns, setGridColumns] = useState(() => [
+    inventoryTrackingGrid[0],
+    inventoryTrackingGrid[1],
+    ...generateWarehouseColumns(warehouses),
+    inventoryTrackingGrid[2],
+  ]);
+
+  function generateWarehouseColumns(warehouses) {
+    return warehouses.map((warehouse, index) => ({
+      field: `Warehouse_${index}`,
+      headerText: warehouse.toUpperCase(),
+      width: "150",
+      textAlign: "Center",
+    }));
+  }
 
   const handleViewPurchases = (invoiceNo) => {
     const invoice = purchasesList.find(
@@ -1023,6 +1105,7 @@ const ContextProvider = ({ children }) => {
         returnsGrid,
         purchasesGrid,
         purchasesReturnsGrid,
+        //stockMovementGrid,
         activeMenu,
         setActiveMenu,
         isClicked,
@@ -1117,6 +1200,7 @@ const ContextProvider = ({ children }) => {
         handleDeletePurchases,
         handleEditPurchases,
         handleViewPurchases,
+        gridColumns,
       }}
     >
       {children}

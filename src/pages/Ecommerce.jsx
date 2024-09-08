@@ -27,26 +27,51 @@ const Ecommerce = () => {
           title="SALES"
           icon={<RiCurrencyFill />}
           customFunc={() => {}}
+          height="24rem"
+          width="24rem"
+          iconSize="8rem"
+          textSize="1.5rem"
+          bgColor={currentColor}
         />
         <MenuTile
           title="PURCHASES"
           icon={<FaShoppingBasket />}
           customFunc={() => {}}
+          height="24rem"
+          width="24rem"
+          iconSize="8rem"
+          textSize="1.5rem"
+          bgColor={currentColor}
         />
         <MenuTile
           title="STOCK MANAGEMENT"
           icon={<MdBorderColor />}
           customFunc={() => {}}
+          height="24rem"
+          width="24rem"
+          iconSize="8rem"
+          textSize="1.5rem"
+          bgColor={currentColor}
         />
         <MenuTile
           title="REPORTS"
           icon={<IoBarChartSharp />}
           customFunc={() => {}}
+          height="24rem"
+          width="24rem"
+          iconSize="8rem"
+          textSize="1.5rem"
+          bgColor={currentColor}
         />
         <MenuTile
           title="ADMIN"
           icon={<MdAdminPanelSettings />}
           customFunc={() => {}}
+          height="24rem"
+          width="24rem"
+          iconSize="8rem"
+          textSize="1.5rem"
+          bgColor={currentColor}
         />
       </div>
     </div>
