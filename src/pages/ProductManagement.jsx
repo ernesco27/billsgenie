@@ -18,7 +18,7 @@ import {
 } from "@syncfusion/ej2-react-grids";
 
 import { ProductsGrid } from "../data/Grids";
-import { ProductModal } from "../components";
+import { StockTransfer } from "../components";
 
 const ProductManagement = () => {
   const [addProduct, setAddProduct] = useState(false);
@@ -66,7 +66,12 @@ const ProductManagement = () => {
           />
         </GridComponent>
       </div>
-      {addProduct && <ProductModal />}
+      {addProduct && (
+        <StockTransfer
+          editTitle="Edit Stock Transfer"
+          newTitle="Create Stock Transfer"
+        />
+      )}
     </div>
   );
 };

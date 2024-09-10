@@ -198,6 +198,8 @@ const ContextProvider = ({ children }) => {
     inventoryTrackingGrid[2],
   ]);
 
+  const [createStockTransfer, setCreateStockTransfer] = useState(false);
+
   function generateWarehouseColumns(warehouses) {
     return warehouses.map((warehouse, index) => ({
       field: `Warehouse_${index}`,
@@ -1201,6 +1203,8 @@ const ContextProvider = ({ children }) => {
         handleEditPurchases,
         handleViewPurchases,
         gridColumns,
+        createStockTransfer,
+        setCreateStockTransfer,
       }}
     >
       {children}

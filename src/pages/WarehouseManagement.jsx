@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Header } from "../components";
 import {
   GridComponent,
@@ -29,9 +29,11 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { WarehouseGrid, stockTransferGrid } from "../data/Grids";
 import { Button } from "../components";
 import { useStateContext } from "../contexts/ContextProvider.jsx";
+import { StockTransfer } from "../components";
 
 const WarehouseManagement = () => {
-  const { currentColor } = useStateContext();
+  const { currentColor, createStockTransfer, setCreateStockTransfer } =
+    useStateContext();
 
   let headerText = [{ text: "Warehouses" }, { text: "Stock Transfer" }];
 
@@ -84,7 +86,10 @@ const WarehouseManagement = () => {
       <div className="mt-10">
         <div className="flex justify-end mb-5">
           <TooltipComponent content="Make Stock Transfer" position="TopCenter">
-            <button className="p-2 text-6xl text-gray-400 hover:text-gray-950 hover:bg-light-gray rounded-full hover:drop-shadow-xl">
+            <button
+              className="p-2 text-6xl text-gray-400 hover:text-gray-950 hover:bg-light-gray rounded-full hover:drop-shadow-xl"
+              onClick={() => setCreateStockTransfer(true)}
+            >
               {<PiArrowsLeftRightBold />}
             </button>
           </TooltipComponent>
@@ -139,6 +144,12 @@ const WarehouseManagement = () => {
           </TabItemsDirective>
         </TabComponent>
       </div>
+      {createStockTransfer && (
+        <StockTransfer
+          editTitle="Edit Stock Transfer"
+          newTitle="Create Stock Transfer"
+        />
+      )}
     </div>
   );
 };
