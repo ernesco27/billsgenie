@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Header } from "../components";
 import {
   GridComponent,
@@ -29,13 +29,42 @@ import { IoIosAddCircleOutline } from "react-icons/io";
 import { WarehouseGrid, stockTransferGrid } from "../data/Grids";
 import { Button } from "../components";
 import { useStateContext } from "../contexts/ContextProvider.jsx";
-import { StockTransfer } from "../components";
+import { StockTransfer, StockTransferTemplate } from "../components";
 
 const WarehouseManagement = () => {
-  const { currentColor, createStockTransfer, setCreateStockTransfer } =
-    useStateContext();
+  const {
+    currentColor,
+    createStockTransfer,
+    setCreateStockTransfer,
+    handleSaveStockTransfer,
+    date,
+    fromWarehouse,
+    toWarehouse,
+    stockList,
+    remarks,
+    stockTransferList,
+    handleEditStockTransfer,
+    handleViewStockTransfer,
+    handleDeleteStockTransfer,
+    selectedToEdit,
+    selectedInvoice,
+  } = useStateContext();
 
   let headerText = [{ text: "Warehouses" }, { text: "Stock Transfer" }];
+
+  const handleCommandClick = (args) => {
+    const referenceNo = args.rowData.ReferenceNo;
+    console.log("args:", args);
+    if (args.commandColumn.type === "View") {
+      handleViewStockTransfer(referenceNo);
+    } else if (args.commandColumn.type === "Edit") {
+      handleEditStockTransfer(referenceNo);
+    } else if (args.commandColumn.type === "Delete") {
+      handleDeleteStockTransfer(referenceNo);
+    }
+  };
+
+  const invoiceRef = useRef();
 
   const content0 = () => {
     return (
@@ -74,6 +103,7 @@ const WarehouseManagement = () => {
               PdfExport,
               Edit,
               Toolbar,
+              CommandColumn,
             ]}
           />
         </GridComponent>
@@ -97,12 +127,12 @@ const WarehouseManagement = () => {
         <GridComponent
           cssClass="custom-grid"
           id="gridcomp"
-          //dataSource={data}
+          dataSource={stockTransferList}
           allowPaging
           allowSorting
           //allowFiltering
           //toolbar={toolbarOptions}
-          //commandClick={handleCommandClick}
+          commandClick={handleCommandClick}
         >
           <ColumnsDirective>
             {stockTransferGrid.map((item, index) => (
@@ -120,6 +150,7 @@ const WarehouseManagement = () => {
               PdfExport,
               Edit,
               Toolbar,
+              CommandColumn,
             ]}
           />
         </GridComponent>
@@ -146,9 +177,24 @@ const WarehouseManagement = () => {
       </div>
       {createStockTransfer && (
         <StockTransfer
+          transferDetails={selectedToEdit}
           editTitle="Edit Stock Transfer"
           newTitle="Create Stock Transfer"
+          customFunc={() =>
+            handleSaveStockTransfer(
+              date,
+              fromWarehouse,
+              toWarehouse,
+              stockList,
+              remarks,
+            )
+          }
         />
+      )}
+      {selectedInvoice && (
+        <div ref={invoiceRef}>
+          <StockTransferTemplate transferDetails={selectedInvoice} />
+        </div>
       )}
     </div>
   );

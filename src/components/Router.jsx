@@ -24,6 +24,12 @@ import {
   ProductManagement,
   WarehouseManagement,
   SupplierManagement,
+  FinancialSettings,
+  SysConfig,
+  UserManagement,
+  CompanySettings,
+  UiCustomization,
+  Admin,
 } from "../pages";
 
 function Router() {
@@ -94,6 +100,32 @@ function Router() {
             {
               path: "supplier-management",
               element: <ProtectedRoute element={<SupplierManagement />} />,
+            },
+          ],
+        },
+        {
+          path: "/dashboard/admin",
+          element: <ProtectedRoute element={<Admin />} />,
+          children: [
+            {
+              path: "user-management",
+              element: <ProtectedRoute element={<UserManagement />} />,
+            },
+            {
+              path: "company-settings",
+              element: <ProtectedRoute element={<CompanySettings />} />,
+            },
+            {
+              path: "financial-settings",
+              element: <ProtectedRoute element={<FinancialSettings />} />,
+            },
+            {
+              path: "system-configuration",
+              element: <ProtectedRoute element={<SysConfig />} />,
+            },
+            {
+              path: "ui-customization",
+              element: <ProtectedRoute element={<UiCustomization />} />,
             },
           ],
         },

@@ -150,19 +150,19 @@ export const stockTransferGrid = [
     textAlign: "Left",
   },
   {
-    field: "TransferNo",
+    field: "ReferenceNo",
     headerText: "REFERENCE NO.",
     width: "100",
     textAlign: "Left",
   },
   {
-    field: "From",
+    field: "FromWarehouse",
     headerText: "FROM",
     width: "100",
     textAlign: "Left",
   },
   {
-    field: "To",
+    field: "ToWarehouse",
     headerText: "TO",
     width: "100",
     textAlign: "Left",
@@ -173,13 +173,29 @@ export const stockTransferGrid = [
     headerText: "ACTION",
     width: "150",
     textAlign: "Center",
-    commands: {
-      type: "Edit",
-      buttonOption: {
-        //cssClass: "e-flat",
-        iconCss: "e-edit e-icons",
+    commands: [
+      {
+        type: "View",
+        buttonOption: {
+          //cssClass: "e-flat e-medium",
+          iconCss: "e-eye e-icons",
+        },
       },
-    },
+      {
+        type: "Edit",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-edit e-icons",
+        },
+      },
+      {
+        type: "Delete",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-icons e-trash ",
+        },
+      },
+    ],
   },
 ];
 
@@ -221,5 +237,197 @@ export const suppliersGrid = [
         iconCss: "e-edit e-icons",
       },
     },
+  },
+];
+
+const gridEmployeeProfile = (props) => (
+  <div className="flex items-center gap-2">
+    <img
+      className="rounded-full w-10 h-10"
+      src={props.userAvatar}
+      alt="employee"
+    />
+    <p>{`${props.firstName} ${props.lastName}`}</p>
+  </div>
+);
+
+export const usersGrid = [
+  {
+    headerText: "EMPLOYEE",
+    width: "150",
+    template: gridEmployeeProfile,
+    textAlign: "Center",
+  },
+  {
+    field: "userName",
+    headerText: "USERNAME",
+    width: "120",
+    textAlign: "Center",
+  },
+
+  {
+    field: "userTitle",
+    headerText: "DESIGNATION",
+    width: "170",
+    textAlign: "Center",
+  },
+
+  {
+    field: "userDepartment",
+    headerText: "DEPARTMENT",
+    width: "135",
+
+    textAlign: "Center",
+  },
+
+  {
+    field: "userEmail",
+    headerText: "EMAIL",
+    width: "120",
+    textAlign: "Center",
+  },
+  {
+    field: "staffID",
+    headerText: "STAFF ID",
+    width: "125",
+    textAlign: "Center",
+  },
+  {
+    field: "Action",
+    headerText: "ACTION",
+    width: "150",
+    textAlign: "Center",
+    commands: [
+      {
+        type: "View",
+        buttonOption: {
+          //cssClass: "e-flat e-medium",
+          iconCss: "e-eye e-icons",
+        },
+      },
+      {
+        type: "Edit",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-edit e-icons",
+        },
+      },
+      {
+        type: "Delete",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-icons e-trash ",
+        },
+      },
+    ],
+  },
+];
+
+export const warehouseGrid = [
+  {
+    field: "Id",
+    headerText: "ID",
+    width: "50",
+    textAlign: "Center",
+  },
+  {
+    field: "warehouseName",
+    headerText: "WAREHOUSE",
+    width: "120",
+    textAlign: "Center",
+  },
+
+  {
+    field: "Action",
+    headerText: "ACTION",
+    width: "150",
+    textAlign: "Center",
+    commands: [
+      {
+        type: "View",
+        buttonOption: {
+          //cssClass: "e-flat e-medium",
+          iconCss: "e-eye e-icons",
+        },
+      },
+      {
+        type: "Edit",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-edit e-icons",
+        },
+      },
+      {
+        type: "Delete",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-icons e-trash ",
+        },
+      },
+    ],
+  },
+];
+
+export const customersGrid = [
+  {
+    field: "Id",
+    headerText: "ID",
+    width: "50",
+    textAlign: "Center",
+  },
+  {
+    field: "customerName",
+    headerText: "CUSTOMER NAME",
+    width: "120",
+    textAlign: "Center",
+  },
+  {
+    field: "businessUnit",
+    headerText: "BUSINESS UNIT",
+    width: "120",
+    textAlign: "Center",
+  },
+  {
+    field: "tinNumber",
+    headerText: "TIN NO.",
+    width: "120",
+    textAlign: "Center",
+  },
+
+  {
+    field: "relManager",
+    headerText: "REL. MANAGER",
+    width: "120",
+    textAlign: "Center",
+  },
+
+  {
+    field: "Action",
+    headerText: "ACTION",
+    width: "150",
+    textAlign: "Center",
+    commands: [
+      {
+        type: "View",
+        buttonOption: {
+          //cssClass: "e-flat e-medium",
+          iconCss: "e-eye e-icons",
+        },
+      },
+      {
+        type: "Edit",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-edit e-icons",
+        },
+      },
+      {
+        type: "Delete",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-icons e-trash ",
+        },
+      },
+    ],
   },
 ];

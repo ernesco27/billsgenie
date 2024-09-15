@@ -10,22 +10,23 @@ import {
 } from "@syncfusion/ej2-react-grids";
 
 import { employeesData, contextMenuItems, employeesGrid } from "../data/dummy";
+import { usersGrid } from "../data/Grids";
 
 import { Header } from "../components";
 
 const Employees = () => {
   return (
     <div className="m-2 md:m-10 p-2 md:p-10 bg-white rounded-3xl">
-      <Header category="Page" title="Employees" />
+      <Header category="User Management" title="Users" btnTitle="Add User" />
       <GridComponent
-        dataSource={employeesData}
+        //dataSource={employeesData}
         allowPaging
         allowSorting
         toolbar={["Search"]}
         width="auto"
       >
         <ColumnsDirective>
-          {employeesGrid.map((item, index) => (
+          {usersGrid.map((item, index) => (
             <ColumnDirective key={index} {...item} />
           ))}
         </ColumnsDirective>

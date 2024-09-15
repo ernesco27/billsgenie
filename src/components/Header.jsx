@@ -17,7 +17,7 @@ const Header = ({ category, title, customFunc, btnTitle }) => {
         <button
           type="button"
           onClick={customFunc}
-          className="h-14 w-44 rounded-lg text-center font-bold text-xl flex items-center p-1 hover:shadow-md"
+          className="h-14 w-44 rounded-lg text-center font-bold text-xl flex items-center justify-center p-1 hover:shadow-md"
           style={{ backgroundColor: currentColor }}
         >
           <span className="text-xl">

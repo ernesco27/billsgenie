@@ -34,9 +34,6 @@ import {
 
 import { useStateContext } from "../contexts/ContextProvider";
 
-const customers = ["Cash", "MaxMart", "Shoprite", "Melcom"];
-const suppliers = ["Cash", "Izako", "Harimat", "G-cube"];
-
 const items = [
   "Super Chocolate",
   "Eskimo Vanilla",
@@ -44,78 +41,42 @@ const items = [
   "Delice Cone Caramel",
 ];
 
-const vat = [
-  { label: "3%", value: 0.003 },
-  { label: "15%", value: 0.15 },
-  { label: "21.9%", value: 0.219 },
-];
-const trxn = [
-  { label: "Cash", value: "Cash" },
-  { label: "Credit", value: "Credit" },
-];
-
-const discountList = [
-  { label: "None", value: "None" },
-  { label: "Selective", value: "Selective" },
-  { label: "General", value: "General" },
-];
-
-const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
+const StockTransfer = ({
+  transferDetails,
+  newTitle,
+  editTitle,
+  customFunc,
+}) => {
   const {
     setCreateStockTransfer,
-    tin,
-    setTin,
+
     product,
     setProduct,
     quantity,
     setQuantity,
-    price,
-    setPrice,
-    tax,
-    setTax,
-    vatAmount,
-    setVatAmount,
-    discountType,
-    setDiscountType,
-    discountValue,
-    setDiscountValue,
-    discountAmount,
-    setDiscountAmount,
-    //handleQtyChange,
-    //handleDisc,
-    handlePriceInput,
     date,
     setDate,
-    tranType,
-    setTranType,
+
     customer,
     setCustomer,
-    supplier,
-    setSupplier,
-    address,
-    setAddress,
-    amount,
+
     itemList,
     setItemList,
+    stockList,
+    setStockList,
     //handleAddItem,
     remarks,
     setRemarks,
-    //tranDate,
-    // setTranDate,
-    subTotal,
-    // setSubTotal,
-    totalAmount,
-    // setTotalAmount,
-    totalTax,
-    //setTotalTax,
-    //totalDiscount,
-    // setTotalDiscount,
-    generalDiscount,
-    setGeneralDiscount,
-    generalDiscAmount,
+    warehouses,
+    setWarehouses,
+    fromWarehouse,
+    setFromWarehouse,
+    toWarehouse,
+    setToWarehouse,
+    stockTransferList,
+    setStockTransferList,
+
     //handleSave,
-    purchasesCreation,
-    setPurchasesCreation,
   } = useStateContext();
 
   const [editingItemIndex, setEditingItemIndex] = useState(null);
@@ -126,20 +87,13 @@ const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
   const editOptions = { allowEditing: true, allowDeleting: true };
 
   useEffect(() => {
-    console.log("invoice details:", invoiceDetails);
-    if (invoiceDetails && invoiceDetails.CustomerName) {
-      //setDate(invoiceDetails.OrderDate);
-      setTranType(invoiceDetails.TranType);
-      setCustomer(invoiceDetails.CustomerName);
-      //setAddress(invoiceDetails.address);
-      setItemList(invoiceDetails.Items);
-      // Set other fields as needed
-    } else if (invoiceDetails && invoiceDetails.SupplierName) {
-      setTranType(invoiceDetails.TranType);
-      setSupplier(invoiceDetails.SupplierName);
-      setItemList(invoiceDetails.Items);
+    console.log("transfer details:", transferDetails);
+    if (transferDetails) {
+      setFromWarehouse(transferDetails.FromWarehouse);
+      setToWarehouse(transferDetails.ToWarehouse);
+      setStockList(transferDetails.Items);
     }
-  }, [invoiceDetails]);
+  }, [transferDetails]);
 
   const itemsGrid = [
     {
@@ -194,34 +148,34 @@ const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
   }, [quantity, product]);
 
   useEffect(() => {
-    itemList.length !== 0
+    stockList.length !== 0
       ? setIsSaveBtnDisabled(false)
       : setIsSaveBtnDisabled(true);
-  }, [itemList]);
+  }, [stockList]);
 
   const addItem = () => {
     let updatedList;
 
     if (editingItemIndex !== null) {
       // Editing an existing item
-      updatedList = [...itemList];
+      updatedList = [...stockList];
       updatedList[editingItemIndex] = {
         Line: editingItemIndex + 1, // Ensure line number is retained correctly
         Item: product,
         Quantity: quantity,
       };
 
-      setItemList(updatedList);
+      setStockList(updatedList);
       setEditingItemIndex(null); // Reset editing index after updating
     } else {
       // Adding a new item
       const newItem = {
-        Line: itemList.length + 1, // Line number as the last index + 1
+        Line: stockList.length + 1, // Line number as the last index + 1
         Item: product,
         Quantity: quantity,
       };
 
-      setItemList([...itemList, newItem]);
+      setStockList([...stockList, newItem]);
     }
 
     // Reset the input fields
@@ -238,14 +192,14 @@ const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
   };
 
   const handleDeleteItem = (args) => {
-    let updatedList = [...itemList];
+    let updatedList = [...stockList];
 
     // Check if data is available in args
     if (args.data && args.data.length > 0) {
       // Assuming args.data contains the deleted row(s)
       const deletedItem = args.data[0]; // Get the first item from data array
-      updatedList = itemList.filter((item) => item.Item !== deletedItem.Item);
-      setItemList(updatedList);
+      updatedList = stockList.filter((item) => item.Item !== deletedItem.Item);
+      setStockList(updatedList);
     } else {
       console.error("No data available in args.");
     }
@@ -260,7 +214,7 @@ const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
     setProduct("");
     setQuantity("");
 
-    setItemList([]);
+    setStockList([]);
   };
 
   const returnToInvoice = () => {
@@ -271,12 +225,12 @@ const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
     <div className=" bg-off-white w-11/12 min-h-screen absolute top-8 right-16 rounded-2xl">
       <div className="flex justify-between items-center">
         <p className="font-bold text-4xl m-4">
-          {invoiceDetails ? editTitle : newTitle}
+          {transferDetails ? editTitle : newTitle}
         </p>
         <div className="flex gap-4 mr-6">
           <Button
             bgColor={isSaveBtnDisabled ? "#9ca3af" : "#34d399"}
-            text={invoiceDetails ? "Update" : "Save"}
+            text={transferDetails ? "Update" : "Save"}
             icon={<IoIosSave />}
             customFunc={customFunc}
             width="7rem"
@@ -328,10 +282,10 @@ const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
               <div className="mb-5">
                 <Autocomplete
                   disablePortal
-                  value={customer}
-                  onChange={(e, newValue) => setCustomer(newValue)}
+                  value={fromWarehouse}
+                  onChange={(e, newValue) => setFromWarehouse(newValue)}
                   id="location"
-                  options={customers}
+                  options={warehouses}
                   //sx={{ width: 600 }}
                   sx={{
                     width: 600,
@@ -358,10 +312,10 @@ const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
               <div className="mb-5">
                 <Autocomplete
                   disablePortal
-                  value={customer}
-                  onChange={(e, newValue) => setCustomer(newValue)}
+                  value={toWarehouse}
+                  onChange={(e, newValue) => setToWarehouse(newValue)}
                   id="location"
-                  options={customers}
+                  options={warehouses}
                   //sx={{ width: 600 }}
                   sx={{
                     width: 600,
@@ -390,7 +344,7 @@ const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
             <Divider>
               <Chip label="Item Detail" size="large" />
             </Divider>
-            {(customer || supplier) && (
+            {fromWarehouse && toWarehouse && (
               <div>
                 <div className="mb-5 mt-5">
                   <Autocomplete
@@ -506,11 +460,11 @@ const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
           <div className="flex flex-col  mt-10 mb-5">
             <div>
               <p className="text-xl font-bold">From:</p>
-              <span className="text-xl pl-4">{customer}</span>
+              <span className="text-xl pl-4">{fromWarehouse}</span>
             </div>
             <div>
               <p className="text-xl font-bold">To:</p>
-              <span className="text-xl pl-4">{customer}</span>
+              <span className="text-xl pl-4">{toWarehouse}</span>
             </div>
           </div>
 
@@ -518,7 +472,7 @@ const StockTransfer = ({ invoiceDetails, newTitle, editTitle, customFunc }) => {
             <GridComponent
               cssClass="custom-grid"
               id="gridcomp"
-              dataSource={itemList}
+              dataSource={stockList}
               editSettings={editOptions}
               enableStickyHeader
               height={400}

@@ -92,3 +92,8 @@ body {
 /* .print {
     page-break-inside: avoid;
   } */
+
+.custom-tabs .ant-tabs-tab {
+  font-size: 20px; /* Increase tab label font size */
+  padding: 16px; /* Add padding for bigger clickable area */
+}

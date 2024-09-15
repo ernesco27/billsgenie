@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { SiBookmeter } from "react-icons/si";
-import { MdOutlineProductionQuantityLimits } from "react-icons/md";
-import { PiArrowsLeftRightBold } from "react-icons/pi";
-import { FaWarehouse } from "react-icons/fa";
-import { FaPeopleArrows } from "react-icons/fa";
+
+import { FaUsersCog } from "react-icons/fa";
+import { MdAssuredWorkload } from "react-icons/md";
+import { GrMoney } from "react-icons/gr";
+import { GrSystem } from "react-icons/gr";
+import { MdDesignServices } from "react-icons/md";
 
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 import { MenuTile } from "../components";
 import { useStateContext } from "../contexts/ContextProvider";
 
-const Warehouse = () => {
+const Admin = () => {
   const { currentColor } = useStateContext();
   const [activeTile, setActiveTile] = useState("");
 
@@ -21,7 +22,7 @@ const Warehouse = () => {
   // Function to check if the current path matches the tile
   const isActive = (path) => currentPath.includes(path);
 
-  const isOutletRendered = location.pathname !== "/dashboard/stock-management";
+  const isOutletRendered = location.pathname !== "/dashboard/admin";
 
   const tileSize = isOutletRendered ? "10rem" : "15rem";
   const iconSize = isOutletRendered ? "3rem" : "8rem";
@@ -33,76 +34,76 @@ const Warehouse = () => {
   return (
     <div>
       <div className="m-2 md:m-10 p-2 md:p-10 bg-white rounded-3xl shadow-lg flex gap-6 justify-center">
-        <Link to="/dashboard/stock-management/track-inventory">
+        <Link to="/dashboard/admin/user-management">
           <MenuTile
-            title="Track Inventory"
-            icon={<SiBookmeter />}
+            title="User Management"
+            icon={<FaUsersCog />}
             customFunc={() => {
-              handleTileClick("track-inventory");
+              handleTileClick("user-management");
             }}
             height={tileSize}
             width={tileSize}
             iconSize={iconSize}
             textSize={textSize}
-            bgColor={isActive("track-inventory") ? currentColor : "#e2e8f0"}
+            bgColor={isActive("user-management") ? currentColor : "#e2e8f0"}
           />
         </Link>
-        <Link to="/dashboard/stock-management/stock-movement">
+        <Link to="/dashboard/admin/company-settings">
           <MenuTile
-            title="Stock Movement"
-            icon={<PiArrowsLeftRightBold />}
+            title="Company Settings"
+            icon={<MdAssuredWorkload />}
             customFunc={() => {
-              handleTileClick("stock-movement");
+              handleTileClick("company-settings");
             }}
             height={tileSize}
             width={tileSize}
             iconSize={iconSize}
             textSize={textSize}
-            bgColor={isActive("stock-movement") ? currentColor : "#e2e8f0"}
+            bgColor={isActive("company-settings") ? currentColor : "#e2e8f0"}
           />
         </Link>
-        <Link to="/dashboard/stock-management/product-management">
+        <Link to="/dashboard/admin/financial-settings">
           <MenuTile
-            title="Product Management"
-            icon={<MdOutlineProductionQuantityLimits />}
+            title="Financial Settings"
+            icon={<GrMoney />}
             customFunc={() => {
-              handleTileClick("product-management");
+              handleTileClick("financial-settings");
             }}
             height={tileSize}
             width={tileSize}
             iconSize={iconSize}
             textSize={textSize}
-            bgColor={isActive("product-management") ? currentColor : "#e2e8f0"}
+            bgColor={isActive("financial-settings") ? currentColor : "#e2e8f0"}
           />
         </Link>
-        <Link to="/dashboard/stock-management/warehouse-management">
+        <Link to="/dashboard/admin/system-configuration">
           <MenuTile
-            title="Warehouse Management"
-            icon={<FaWarehouse />}
+            title="System Configuration"
+            icon={<GrSystem />}
             customFunc={() => {
-              handleTileClick("warehouse-management");
+              handleTileClick("system-configuration");
             }}
             height={tileSize}
             width={tileSize}
             iconSize={iconSize}
             textSize={textSize}
             bgColor={
-              isActive("warehouse-management") ? currentColor : "#e2e8f0"
+              isActive("system-configuration") ? currentColor : "#e2e8f0"
             }
           />
         </Link>
-        <Link to="/dashboard/stock-management/supplier-management">
+        <Link to="/dashboard/admin/ui-customization">
           <MenuTile
-            title="Supplier Management"
-            icon={<FaPeopleArrows />}
+            title="UI Customization"
+            icon={<MdDesignServices />}
             customFunc={() => {
-              handleTileClick("supplier-management");
+              handleTileClick("ui-customization");
             }}
             height={tileSize}
             width={tileSize}
             iconSize={iconSize}
             textSize={textSize}
-            bgColor={isActive("supplier-management") ? currentColor : "#e2e8f0"}
+            bgColor={isActive("ui-customization") ? currentColor : "#e2e8f0"}
           />
         </Link>
       </div>
@@ -113,4 +114,4 @@ const Warehouse = () => {
   );
 };
 
-export default Warehouse;
+export default Admin;

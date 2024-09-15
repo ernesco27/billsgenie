@@ -30,6 +30,7 @@
     "@syncfusion/ej2-react-popups": "^26.2.8",
     "@syncfusion/ej2-react-richtexteditor": "^26.2.8",
     "@syncfusion/ej2-react-schedule": "^26.2.7",
+    "@tailwindcss/forms": "^0.5.9",
     "antd": "^5.20.2",
     "dayjs": "^1.11.12",
     "dotenv": "^16.4.5",
