@@ -11,14 +11,14 @@ const items = [
   },
   {
     key: "2",
-    label: "Stock Management Configs",
+    label: "Add/Manage Stock Items",
     children: "Content of Tab Pane 2",
   },
-  // {
-  //   key: "3",
-  //   label: "Tab 3",
-  //   children: "Content of Tab Pane 3",
-  // },
+  {
+    key: "3",
+    label: "Stock Management Configs",
+    children: "Content of Tab Pane 3",
+  },
 ];
 
 const WarehouseSettings = () => {

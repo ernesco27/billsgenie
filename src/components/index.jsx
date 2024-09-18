@@ -32,3 +32,5 @@ export { default as WarehouseSettings } from "./WarehouseSettings";
 //export { default as Warehouse } from "./Warehouse";
 export { default as BusinessPartnerSettings } from "./BusinessPartnerSettings";
 export { default as ClientCreator } from "./ClientCreator";
+export { default as SupplierCreator } from "./SupplierCreator";
+export { default as WarehouseCreator } from "./WarehouseCreator";

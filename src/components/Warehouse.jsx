@@ -13,19 +13,36 @@ import {
 
 import { useStateContext } from "../contexts/ContextProvider";
 
-import { Header, UserCreator } from "../components";
+import { Header, WarehouseCreator } from "../components";
 
 import { warehouseGrid } from "../data/Grids";
 
 const Warehouse = () => {
-  const { createUser, setCreateUser, warehouseList } = useStateContext();
+  const {
+    createWarehouse,
+    setCreateWarehouse,
+    warehouseList,
+    handleDeleteWarehouse,
+    handleEditWarehouse,
+    selectedToEdit,
+  } = useStateContext();
+
+  const handleCommandClick = (args) => {
+    const warehouseName = args.rowData.warehouseName;
+    if (args.commandColumn.type === "Edit") {
+      handleEditWarehouse(warehouseName);
+    } else if (args.commandColumn.type === "Delete") {
+      handleDeleteWarehouse(warehouseName);
+    }
+  };
+
   return (
     <div className="m-2  p-2 md:p-10 bg-white rounded-3xl">
       <Header
         category="Company Settings"
         title="Warehouses"
         btnTitle="Add W/H"
-        customFunc={() => setCreateUser(true)}
+        customFunc={() => setCreateWarehouse(true)}
       />
       <GridComponent
         dataSource={warehouseList}
@@ -33,6 +50,7 @@ const Warehouse = () => {
         allowSorting
         toolbar={["Search"]}
         width="auto"
+        commandClick={handleCommandClick}
       >
         <ColumnsDirective>
           {warehouseGrid.map((item, index) => (
@@ -41,7 +59,7 @@ const Warehouse = () => {
         </ColumnsDirective>
         <Inject services={[Page, Search, Toolbar, CommandColumn]} />
       </GridComponent>
-      {createUser && <UserCreator />}
+      {createWarehouse && <WarehouseCreator editDetails={selectedToEdit} />}
     </div>
   );
 };

@@ -201,25 +201,31 @@ export const stockTransferGrid = [
 
 export const suppliersGrid = [
   {
+    field: "Id",
+    headerText: "ID",
+    width: "50",
+    textAlign: "Center",
+  },
+  {
     field: "SupplierName",
-    headerText: "NAME OF SUPPLIER",
+    headerText: "SUPPLIER NAME",
     width: "150",
     textAlign: "Left",
   },
   {
-    field: "Address",
+    field: "businessAddress",
     headerText: "ADDRESS",
     width: "100",
     textAlign: "Left",
   },
   {
-    field: "Contact",
+    field: "contactNumber",
     headerText: "CONTACT",
     width: "100",
     textAlign: "Left",
   },
   {
-    field: "TinNo",
+    field: "tinNumber",
     headerText: "TIN NO.",
     width: "100",
     textAlign: "Left",
@@ -230,13 +236,29 @@ export const suppliersGrid = [
     headerText: "ACTION",
     width: "150",
     textAlign: "Center",
-    commands: {
-      type: "Edit",
-      buttonOption: {
-        //cssClass: "e-flat",
-        iconCss: "e-edit e-icons",
+    commands: [
+      {
+        type: "View",
+        buttonOption: {
+          //cssClass: "e-flat e-medium",
+          iconCss: "e-eye e-icons",
+        },
       },
-    },
+      {
+        type: "Edit",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-edit e-icons",
+        },
+      },
+      {
+        type: "Delete",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-icons e-trash ",
+        },
+      },
+    ],
   },
 ];
 
@@ -340,16 +362,9 @@ export const warehouseGrid = [
   {
     field: "Action",
     headerText: "ACTION",
-    width: "150",
+    width: "50",
     textAlign: "Center",
     commands: [
-      {
-        type: "View",
-        buttonOption: {
-          //cssClass: "e-flat e-medium",
-          iconCss: "e-eye e-icons",
-        },
-      },
       {
         type: "Edit",
         buttonOption: {

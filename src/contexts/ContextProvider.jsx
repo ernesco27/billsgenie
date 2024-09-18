@@ -93,6 +93,16 @@ const storedCustomerList = () => {
   return savedData ? JSON.parse(savedData) : [];
 };
 
+const storedSupplierList = () => {
+  const savedData = localStorage.getItem("supplier");
+  return savedData ? JSON.parse(savedData) : [];
+};
+
+const storedWarehouseList = () => {
+  const savedData = localStorage.getItem("warehouse");
+  return savedData ? JSON.parse(savedData) : [];
+};
+
 const ContextProvider = ({ children }) => {
   const [activeMenu, setActiveMenu] = useState(true);
   const [openCard, setOpenCard] = useState(false);
@@ -198,10 +208,169 @@ const ContextProvider = ({ children }) => {
     busRegNumber: "",
   };
 
-  const [warehouseList, setWarehouseList] = useState("");
+  const supplierData = {
+    supplierName: "",
+    businessAddress: "",
+    tinNumber: "",
+    contactNumber: "",
+    emailAddress: "",
+    businessUnit: "",
+    relManager: "",
+  };
+
+  const [warehouseList, setWarehouseList] = useState(storedWarehouseList);
+  const [createWarehouse, setCreateWarehouse] = useState(false);
+  const [warehouseName, setWarehouseName] = useState("");
   const [customerList, setCustomerList] = useState(storedCustomerList);
   const [createClient, setCreateClient] = useState(false);
+  const [createSupplier, setCreateSupplier] = useState(false);
   const [custFormData, setCustFormData] = useState(customerData);
+  const [suppFormData, setSuppFormData] = useState(supplierData);
+  const [supplierList, setSupplierList] = useState(storedSupplierList);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
+
+  const handleAddWarehouse = (warehouseName) => {
+    if (selectedToEdit) {
+      // Updating an existing invoice
+      const updatedWarehouseList = warehouseList.map((warehouse) =>
+        warehouse.warehouseName === selectedToEdit.warehouseName
+          ? {
+              ...warehouse,
+
+              warehouseName,
+            }
+          : warehouse,
+      );
+
+      setWarehouseList(updatedWarehouseList);
+      localStorage.setItem("warehouse", JSON.stringify(updatedWarehouseList));
+      setSelectedToEdit(null); // Reset the selectedToEdit state after updating
+    } else {
+      // Creating a new warehouse
+
+      const newWarehouse = {
+        Id: warehouseList.length
+          ? Math.max(...warehouseList.map((item, index) => index)) + 2
+          : 1,
+
+        warehouseName,
+      };
+
+      const updatedWarehouseList = [...warehouseList, newWarehouse];
+      setWarehouseList(updatedWarehouseList);
+
+      //setUserList(updatedSupplierList);
+      localStorage.setItem("warehouse", JSON.stringify(updatedWarehouseList));
+    }
+
+    // Reset the input fields
+    //setFormState(formData);
+    setWarehouseName("");
+
+    setCreateWarehouse(false);
+  };
+
+  const handleEditWarehouse = (warehouseName) => {
+    const warehouseToEdit = warehouseList.find(
+      (warehouse) => warehouse.warehouseName === warehouseName,
+    );
+
+    setSelectedToEdit(warehouseToEdit);
+    setCreateWarehouse(true);
+  };
+
+  const handleDeleteWarehouse = (warehouseName) => {
+    const updatedList = warehouseList.filter(
+      (warehouse) => warehouse.warehouseName !== warehouseName,
+    );
+
+    setWarehouseList(updatedList);
+    localStorage.setItem("warehouse", JSON.stringify(updatedList));
+  };
+
+  const handleAddSupplier = (
+    supplierName,
+    businessAddress,
+    tinNumber,
+    contactNumber,
+    emailAddress,
+    businessUnit,
+  ) => {
+    if (selectedToEdit) {
+      // Updating an existing invoice
+      const updatedSupplierList = supplierList.map((supplier) =>
+        supplier.supplierName === selectedToEdit.supplierName
+          ? {
+              ...supplier,
+
+              supplierName,
+              businessAddress,
+              tinNumber,
+              contactNumber,
+              emailAddress,
+              businessUnit,
+            }
+          : supplier,
+      );
+
+      setSupplierList(updatedSupplierList);
+      localStorage.setItem("supplier", JSON.stringify(updatedSupplierList));
+      setSelectedToEdit(null); // Reset the selectedToEdit state after updating
+    } else {
+      // Creating a new customer
+
+      const newSupplier = {
+        Id: supplierList.length
+          ? Math.max(...supplierList.map((item, index) => index)) + 2
+          : 1,
+
+        supplierName,
+        businessAddress,
+        tinNumber,
+        contactNumber,
+        emailAddress,
+        businessUnit,
+      };
+
+      setSupplierList([newSupplier, ...supplierList]);
+      const updatedSupplierList = [newSupplier, ...supplierList];
+      //setUserList(updatedSupplierList);
+      localStorage.setItem("supplier", JSON.stringify(updatedSupplierList));
+    }
+
+    // Reset the input fields
+    //setFormState(formData);
+    setSuppFormData(supplierData);
+
+    setCreateClient(false); // Close the invoice creation modal
+  };
+
+  const handleViewSupplier = (supplierName) => {
+    const reference = supplierList.find(
+      (supplier) => supplier.supplierName === supplierName,
+    );
+    if (reference) {
+      setSelectedSupplier(reference);
+    }
+  };
+
+  const handleEditSupplier = (supplierName) => {
+    const supplierToEdit = supplierList.find(
+      (supplier) => supplier.supplierName === supplierName,
+    );
+
+    setSelectedToEdit(supplierToEdit);
+    setCreateSupplier(true);
+  };
+
+  const handleDeleteSupplier = (supplierName) => {
+    const updatedList = supplierList.filter(
+      (supplier) => supplier.supplierName !== supplierName,
+    );
+
+    setSupplierList(updatedList);
+    localStorage.setItem("supplier", JSON.stringify(updatedList));
+  };
 
   const handleAddCustomer = (
     customerName,
@@ -255,7 +424,7 @@ const ContextProvider = ({ children }) => {
 
       setCustomerList([newCustomer, ...customerList]);
       const updatedCustomerList = [newCustomer, ...customerList];
-      setUserList(updatedCustomerList);
+      //setUserList(updatedCustomerList);
       localStorage.setItem("customer", JSON.stringify(updatedCustomerList));
     }
 
@@ -1504,6 +1673,25 @@ const ContextProvider = ({ children }) => {
         handleViewCustomer,
         handleEditCustomer,
         handleDeleteCustomer,
+        supplierList,
+        setSupplierList,
+        suppFormData,
+        setSuppFormData,
+        handleAddSupplier,
+        handleViewSupplier,
+        handleDeleteSupplier,
+        handleEditSupplier,
+        createSupplier,
+        setCreateSupplier,
+        selectedSupplier,
+        setSelectedSupplier,
+        createWarehouse,
+        setCreateWarehouse,
+        warehouseName,
+        setWarehouseName,
+        handleAddWarehouse,
+        handleEditWarehouse,
+        handleDeleteWarehouse,
       }}
     >
       {children}

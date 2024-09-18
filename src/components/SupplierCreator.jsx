@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
-import { Button, Modal, message, Upload } from "antd";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+
+import { Modal } from "antd";
 
 import { useStateContext } from "../contexts/ContextProvider";
 
-const ClientCreator = ({ customerDetails, editDetails }) => {
+const SupplierCreator = ({ supplierDetails, editDetails }) => {
   const {
-    handleAddCustomer,
-    custFormData,
-    setCustFormData,
-    setCreateClient,
-    setSelectedInvoice,
+    handleAddSupplier,
+    suppFormData,
+    setSuppFormData,
+
+    setSelectedSupplier,
     setSelectedToEdit,
+    setCreateSupplier,
   } = useStateContext();
   const [isModalOpen, setIsModalOpen] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState();
 
   const units = [
     { name: "Retail", value: "Retail" },
@@ -24,42 +22,40 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
   ];
 
   const handleOk = () => {
-    if (customerDetails) {
-      setCreateClient(false);
-      setSelectedInvoice(null);
+    if (supplierDetails) {
+      setCreateSupplier(false);
+      setSelectedSupplier(null);
       setSelectedToEdit(null);
     } else {
-      handleAddCustomer(
-        custFormData.customerName,
-        custFormData.businessAddress,
-        custFormData.tinNumber,
-        custFormData.contactNumber,
-        custFormData.emailAddress,
-        custFormData.businessUnit,
-        custFormData.relManager,
-        custFormData.busRegNumber,
+      handleAddSupplier(
+        suppFormData.supplierName,
+        suppFormData.businessAddress,
+        suppFormData.tinNumber,
+        suppFormData.contactNumber,
+        suppFormData.emailAddress,
+        suppFormData.businessUnit,
       );
     }
 
     setIsModalOpen(false);
-    setCreateClient(false);
-    setSelectedInvoice(null);
+    setCreateSupplier(false);
+    setSelectedSupplier(null);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
-    setCreateClient(false);
-    setSelectedInvoice(null);
+    setCreateSupplier(false);
+    setSelectedSupplier(null);
     setSelectedToEdit(null);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCustFormData({ ...custFormData, [name]: value });
+    setSuppFormData({ ...suppFormData, [name]: value });
   };
 
   useEffect(() => {
     if (editDetails) {
-      setCustFormData(editDetails);
+      setSuppFormData(editDetails);
     }
   }, [editDetails]);
 
@@ -67,11 +63,11 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
     <div>
       <Modal
         title={
-          customerDetails
-            ? "VIEW CUSTOMER"
+          supplierDetails
+            ? "VIEW SUPPLIER"
             : editDetails
-            ? "EDIT CUSTOMER"
-            : "ADD CUSTOMER"
+            ? "EDIT SUPPLIER"
+            : "ADD SUPPLIER"
         }
         open={isModalOpen}
         onOk={handleOk}
@@ -89,27 +85,27 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-4">
                   <label
-                    htmlFor="customerName"
+                    htmlFor="suppierName"
                     className="block text-lg font-medium leading-6 text-gray-900"
                   >
-                    Customer Name
+                    Supplier Name
                   </label>
                   <div className="mt-2">
                     <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                       <input
-                        id="customerName"
-                        name="customerName"
+                        id="supplierName"
+                        name="supplierName"
                         type="text"
                         value={
-                          customerDetails
-                            ? customerDetails.customerName
-                            : custFormData.customerName
+                          supplierDetails
+                            ? supplierDetails.supplierName
+                            : suppFormData.supplierName
                         }
                         onChange={handleInputChange}
                         placeholder="XYZ Co. Ltd"
-                        autoComplete="customerName"
+                        autoComplete="supplierName"
                         className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                        disabled={customerDetails}
+                        disabled={supplierDetails}
                       />
                     </div>
                   </div>
@@ -119,7 +115,7 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
 
             <div className="border-b border-gray-900/10 pb-12">
               <h2 className="text-lg font-semibold leading-7 text-gray-900">
-                Customer Information
+                Supplier Information
               </h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Use a permanent address where you can receive mail.
@@ -141,12 +137,12 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       defaultValue={""}
                       value={
-                        customerDetails
-                          ? customerDetails.businessAddress
-                          : custFormData.businessAddress
+                        supplierDetails
+                          ? supplierDetails.businessAddress
+                          : suppFormData.businessAddress
                       }
                       onChange={handleInputChange}
-                      disabled={customerDetails}
+                      disabled={supplierDetails}
                     />
                   </div>
                 </div>
@@ -163,15 +159,15 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
                       id="email"
                       name="emailAddress"
                       value={
-                        customerDetails
-                          ? customerDetails.emailAddress
-                          : custFormData.emailAddress
+                        supplierDetails
+                          ? supplierDetails.emailAddress
+                          : suppFormData.emailAddress
                       }
                       onChange={handleInputChange}
                       type="email"
                       autoComplete="email"
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      disabled={customerDetails}
+                      disabled={supplierDetails}
                     />
                   </div>
                 </div>
@@ -188,41 +184,15 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
                         id="phone-number"
                         name="contactNumber"
                         value={
-                          customerDetails
-                            ? customerDetails.contactNumber
-                            : custFormData.contactNumber
+                          supplierDetails
+                            ? supplierDetails.contactNumber
+                            : suppFormData.contactNumber
                         }
                         onChange={handleInputChange}
                         type="number"
                         autoComplete="phone-number"
                         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        disabled={customerDetails}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="sm:col-span-2">
-                  <div>
-                    <label
-                      htmlFor="regNo"
-                      className="block text-lg font-medium leading-6 text-gray-900"
-                    >
-                      Bus. Registration No.
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        id="regNo"
-                        name="busRegNumber"
-                        value={
-                          customerDetails
-                            ? customerDetails.busRegNumber
-                            : custFormData.busRegNumber
-                        }
-                        onChange={handleInputChange}
-                        type="text"
-                        autoComplete="regNo"
-                        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                        disabled={customerDetails}
+                        disabled={supplierDetails}
                       />
                     </div>
                   </div>
@@ -237,18 +207,18 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
                   </label>
                   <div className="mt-2">
                     <input
-                      id="department"
+                      id="tinNo"
                       name="tinNumber"
                       value={
-                        customerDetails
-                          ? customerDetails.tinNumber
-                          : custFormData.tinNumber
+                        supplierDetails
+                          ? supplierDetails.tinNumber
+                          : suppFormData.tinNumber
                       }
                       onChange={handleInputChange}
                       type="text"
                       autoComplete="tinNo"
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      disabled={customerDetails}
+                      disabled={supplierDetails}
                     />
                   </div>
                 </div>
@@ -265,14 +235,14 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
                       id="bus-unit"
                       name="businessUnit"
                       value={
-                        customerDetails
-                          ? customerDetails.businessUnit
-                          : custFormData.businessUnit
+                        supplierDetails
+                          ? supplierDetails.businessUnit
+                          : suppFormData.businessUnit
                       }
                       onChange={handleInputChange}
                       autoComplete="bus-unit"
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
-                      disabled={customerDetails}
+                      disabled={supplierDetails}
                     >
                       {units.map((unit) => (
                         <option key={unit.name} value={unit.value}>
@@ -280,31 +250,6 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
                         </option>
                       ))}
                     </select>
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="relManager"
-                    className="block text-lg font-medium leading-6 text-gray-900"
-                  >
-                    Relationship Manager
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      id="relManager"
-                      name="relManager"
-                      value={
-                        customerDetails
-                          ? customerDetails.relManager
-                          : custFormData.relManager
-                      }
-                      onChange={handleInputChange}
-                      type="text"
-                      autoComplete="relManager"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                      disabled={customerDetails}
-                    />
                   </div>
                 </div>
               </div>
@@ -316,4 +261,4 @@ const ClientCreator = ({ customerDetails, editDetails }) => {
   );
 };
 
-export default ClientCreator;
+export default SupplierCreator;
