@@ -34,20 +34,6 @@ const Admin = () => {
   return (
     <div>
       <div className="m-2 md:m-10 p-2 md:p-10 bg-white rounded-3xl shadow-lg flex gap-6 justify-center">
-        <Link to="/dashboard/admin/user-management">
-          <MenuTile
-            title="User Management"
-            icon={<FaUsersCog />}
-            customFunc={() => {
-              handleTileClick("user-management");
-            }}
-            height={tileSize}
-            width={tileSize}
-            iconSize={iconSize}
-            textSize={textSize}
-            bgColor={isActive("user-management") ? currentColor : "#e2e8f0"}
-          />
-        </Link>
         <Link to="/dashboard/admin/company-settings">
           <MenuTile
             title="Company Settings"
@@ -60,6 +46,20 @@ const Admin = () => {
             iconSize={iconSize}
             textSize={textSize}
             bgColor={isActive("company-settings") ? currentColor : "#e2e8f0"}
+          />
+        </Link>
+        <Link to="/dashboard/admin/user-management">
+          <MenuTile
+            title="User Management"
+            icon={<FaUsersCog />}
+            customFunc={() => {
+              handleTileClick("user-management");
+            }}
+            height={tileSize}
+            width={tileSize}
+            iconSize={iconSize}
+            textSize={textSize}
+            bgColor={isActive("user-management") ? currentColor : "#e2e8f0"}
           />
         </Link>
         <Link to="/dashboard/admin/financial-settings">

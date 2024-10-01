@@ -34,3 +34,5 @@ export { default as BusinessPartnerSettings } from "./BusinessPartnerSettings";
 export { default as ClientCreator } from "./ClientCreator";
 export { default as SupplierCreator } from "./SupplierCreator";
 export { default as WarehouseCreator } from "./WarehouseCreator";
+export { default as ItemCreator } from "./ItemCreator";
+export { default as TaxCreator } from "./TaxCreator";

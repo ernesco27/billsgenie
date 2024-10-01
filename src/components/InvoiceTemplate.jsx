@@ -15,7 +15,7 @@ const InvoiceTemplate = ({ invoiceDetails, customFunc }) => {
   console.log(invoiceDetails);
   const [open, setOpen] = useState(true);
 
-  const { setSelectedInvoice } = useStateContext();
+  const { setSelectedInvoice, companyDetails } = useStateContext();
 
   const invoiceRef = useRef();
 
@@ -37,15 +37,23 @@ const InvoiceTemplate = ({ invoiceDetails, customFunc }) => {
           >
             <div>
               <div className="flex justify-between">
-                <div className="gap-3 ml-3 mt-4 flex text-4xl font-extrabold tracking-tight dark:text-white text-slate-900">
-                  <SiShopware />
-                  <span>BillsGenie</span>
+                <div className="gap-3 ml-3 mt-4 flex text-4xl font-extrabold tracking-tight dark:text-white text-slate-900 items-center">
+                  {/* <SiShopware /> */}
+                  <span>
+                    <img
+                      src={companyDetails.logo}
+                      alt="logo"
+                      width={50}
+                      height={50}
+                    />
+                  </span>
+                  <span>{companyDetails.businessName}</span>
                 </div>
                 <div className="ml-3 mt-4 flex text-3xl font-extrabold tracking-tight dark:text-white text-slate-900">
                   {invoiceDetails.InvoiceNo && invoiceDetails.CustomerName
-                    ? "SALES INVOICES"
+                    ? "SALES INVOICE"
                     : invoiceDetails.ReturnNo && invoiceDetails.CustomerName
-                    ? "SALES RETURNS"
+                    ? "SALES RETURN"
                     : invoiceDetails.InvoiceNo && invoiceDetails.SupplierName
                     ? "PURCHASES INVOICE"
                     : "PURCHASES RETURN"}
@@ -75,8 +83,8 @@ const InvoiceTemplate = ({ invoiceDetails, customFunc }) => {
                           : "SUPPLIER TIN"}
                       </p>
                       <p>
-                        {invoiceDetails.CustomerTIN ||
-                          invoiceDetails.SupplierTIN}
+                        {invoiceDetails.CustomerTin ||
+                          invoiceDetails.SupplierTin}
                       </p>
                     </div>
                     <div className="flex gap-4 invoice-content">
@@ -217,10 +225,10 @@ const InvoiceTemplate = ({ invoiceDetails, customFunc }) => {
             <div className="no-break ">
               <div className="footer bg-green-300 w-full min-h-24 mt-20  rounded-lg flex flex-col items-center justify-center">
                 <div className="bg-green-800 w-11/12 h-10 rounded-2xl flex items-center justify-between p-4 text-white  invoice-content">
-                  <p>BillsGenie Enterprise</p>
-                  <p>0242089437/0277465206</p>
-                  <p>Address: CO 786,Tema - Mankoadze</p>
-                  <p>TIN No: C0005984912</p>
+                  <p>{companyDetails.businessName}</p>
+                  <p>{`Phone Number: ${companyDetails.phoneNumber}`}</p>
+                  <p>{`Address: ${companyDetails.businessAddress}`}</p>
+                  <p>{`TIN No: ${companyDetails.tinNumber}`}</p>
                 </div>
                 <p className="mt-2 text-lg font-bold header">
                   THANK YOU FOR YOUR PATRONAGE!

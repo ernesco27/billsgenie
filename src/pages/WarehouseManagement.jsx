@@ -26,7 +26,11 @@ import { TooltipComponent } from "@syncfusion/ej2-react-popups";
 import { PiArrowsLeftRightBold } from "react-icons/pi";
 import { IoIosAddCircleOutline } from "react-icons/io";
 
-import { WarehouseGrid, stockTransferGrid } from "../data/Grids";
+import {
+  WarehouseGrid,
+  stockTransferGrid,
+  stockAdjustmentGrid,
+} from "../data/Grids";
 import { Button } from "../components";
 import { useStateContext } from "../contexts/ContextProvider.jsx";
 import { StockTransfer, StockTransferTemplate } from "../components";
@@ -48,9 +52,17 @@ const WarehouseManagement = () => {
     handleDeleteStockTransfer,
     selectedToEdit,
     selectedInvoice,
+    createStockAdjustment,
+    setCreateStockAdjustment,
+    stockAdjustmentList,
   } = useStateContext();
 
-  let headerText = [{ text: "Warehouses" }, { text: "Stock Transfer" }];
+  let headerText = [
+    { text: "Warehouses" },
+    { text: "Stock Transfer" },
+    { text: "Stock Adjustment" },
+    { text: "Stock Purchases" },
+  ];
 
   const handleCommandClick = (args) => {
     const referenceNo = args.rowData.ReferenceNo;
@@ -158,6 +170,56 @@ const WarehouseManagement = () => {
     );
   };
 
+  const content2 = () => {
+    return (
+      <div className="mt-10">
+        <div className="flex justify-end mb-5">
+          <TooltipComponent
+            content="Make Stock Adjustment"
+            position="TopCenter"
+          >
+            <button
+              className="p-2 text-6xl text-gray-400 hover:text-gray-950 hover:bg-light-gray rounded-full hover:drop-shadow-xl"
+              onClick={() => setCreateStockAdjustment(true)}
+            >
+              {<PiArrowsLeftRightBold />}
+            </button>
+          </TooltipComponent>
+        </div>
+        <GridComponent
+          cssClass="custom-grid"
+          id="gridcomp"
+          dataSource={stockAdjustmentList}
+          allowPaging
+          allowSorting
+          //allowFiltering
+          //toolbar={toolbarOptions}
+          commandClick={handleCommandClick}
+        >
+          <ColumnsDirective>
+            {stockAdjustmentGrid.map((item, index) => (
+              <ColumnDirective key={index} {...item} />
+            ))}
+          </ColumnsDirective>
+          <Inject
+            services={[
+              //Resize,
+              Sort,
+              //ContextMenu,
+              Filter,
+              Page,
+              ExcelExport,
+              PdfExport,
+              Edit,
+              Toolbar,
+              CommandColumn,
+            ]}
+          />
+        </GridComponent>
+      </div>
+    );
+  };
+
   return (
     <div>
       <div>
@@ -171,7 +233,8 @@ const WarehouseManagement = () => {
           <TabItemsDirective>
             <TabItemDirective header={headerText[0]} content={content0} />
             <TabItemDirective header={headerText[1]} content={content1} />
-            {/* <TabItemDirective header={headerText[2]} content={content2}/>  */}
+            <TabItemDirective header={headerText[2]} content={content2} />
+            <TabItemDirective header={headerText[3]} content={content1} />
           </TabItemsDirective>
         </TabComponent>
       </div>
@@ -195,6 +258,23 @@ const WarehouseManagement = () => {
         <div ref={invoiceRef}>
           <StockTransferTemplate transferDetails={selectedInvoice} />
         </div>
+      )}
+
+      {createStockAdjustment && (
+        <StockTransfer
+          transferDetails={selectedToEdit}
+          editTitle="Edit Stock Transfer"
+          newTitle="Create Stock Transfer"
+          customFunc={() =>
+            handleSaveStockTransfer(
+              date,
+              fromWarehouse,
+              toWarehouse,
+              stockList,
+              remarks,
+            )
+          }
+        />
       )}
     </div>
   );

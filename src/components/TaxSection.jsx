@@ -1,5 +1,4 @@
 import React from "react";
-
 import {
   GridComponent,
   ColumnsDirective,
@@ -13,39 +12,38 @@ import {
 
 import { useStateContext } from "../contexts/ContextProvider";
 
-import { Header, WarehouseCreator } from "../components";
+import { Header, TaxCreator } from "../components";
 
-import { warehouseGrid } from "../data/Grids";
+import { taxGrid } from "../data/Grids";
 
-const Warehouse = () => {
+const TaxSection = () => {
   const {
-    createWarehouse,
-    setCreateWarehouse,
-    warehouseList,
-    handleDeleteWarehouse,
-    handleEditWarehouse,
+    createTax,
+    setCreateTax,
+    taxList,
+    handleDeleteTax,
+    handleEditTax,
     selectedToEdit,
   } = useStateContext();
 
   const handleCommandClick = (args) => {
-    const Id = args.rowData.Id;
+    const taxRate = args.rowData.taxRate;
     if (args.commandColumn.type === "Edit") {
-      handleEditWarehouse(Id);
+      handleEditTax(taxRate);
     } else if (args.commandColumn.type === "Delete") {
-      handleDeleteWarehouse(Id);
+      handleDeleteTax(taxRate);
     }
   };
-
   return (
     <div className="m-2  p-2 md:p-10 bg-white rounded-3xl">
       <Header
         category="Company Settings"
-        title="Warehouses"
-        btnTitle="Add W/H"
-        customFunc={() => setCreateWarehouse(true)}
+        title="Tax Rates"
+        btnTitle="Add Tax Rate"
+        customFunc={() => setCreateTax(true)}
       />
       <GridComponent
-        dataSource={warehouseList}
+        dataSource={taxList}
         allowPaging
         allowSorting
         toolbar={["Search"]}
@@ -53,15 +51,15 @@ const Warehouse = () => {
         commandClick={handleCommandClick}
       >
         <ColumnsDirective>
-          {warehouseGrid.map((item, index) => (
+          {taxGrid.map((item, index) => (
             <ColumnDirective key={index} {...item} />
           ))}
         </ColumnsDirective>
         <Inject services={[Page, Search, Toolbar, CommandColumn]} />
       </GridComponent>
-      {createWarehouse && <WarehouseCreator editDetails={selectedToEdit} />}
+      {createTax && <TaxCreator editDetails={selectedToEdit} />}
     </div>
   );
 };
 
-export { Warehouse };
+export { TaxSection };

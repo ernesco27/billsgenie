@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs } from "antd";
 
 import { Warehouse } from "../components/Warehouse";
+import { StockItems } from "./StockItems";
 
 const items = [
   {
@@ -12,7 +13,7 @@ const items = [
   {
     key: "2",
     label: "Add/Manage Stock Items",
-    children: "Content of Tab Pane 2",
+    children: <StockItems />,
   },
   {
     key: "3",

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
-import { Button, Modal, message, Upload } from "antd";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+
+import { Modal, message } from "antd";
 
 import { useStateContext } from "../contexts/ContextProvider";
 
@@ -25,6 +24,7 @@ const WarehouseCreator = ({ editDetails }) => {
     handleAddWarehouse(warehouseName);
     setIsModalOpen(false);
   };
+
   const handleCancel = () => {
     setIsModalOpen(false);
     setCreateWarehouse(false);

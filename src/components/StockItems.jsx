@@ -13,26 +13,30 @@ import {
 
 import { useStateContext } from "../contexts/ContextProvider";
 
-import { Header, WarehouseCreator } from "../components";
+import { Header, ItemCreator } from "../components";
 
-import { warehouseGrid } from "../data/Grids";
+import { stockItemsGrid } from "../data/Grids";
 
-const Warehouse = () => {
+const StockItems = () => {
   const {
-    createWarehouse,
-    setCreateWarehouse,
-    warehouseList,
-    handleDeleteWarehouse,
-    handleEditWarehouse,
+    createItem,
+    setCreateItem,
+    stockItemList,
+    handleDeleteItem,
+    handleEditItem,
+    handleViewItem,
     selectedToEdit,
+    selectedStockItem,
   } = useStateContext();
 
   const handleCommandClick = (args) => {
     const Id = args.rowData.Id;
-    if (args.commandColumn.type === "Edit") {
-      handleEditWarehouse(Id);
+    if (args.commandColumn.type === "View") {
+      handleViewItem(Id);
+    } else if (args.commandColumn.type === "Edit") {
+      handleEditItem(Id);
     } else if (args.commandColumn.type === "Delete") {
-      handleDeleteWarehouse(Id);
+      handleDeleteItem(Id);
     }
   };
 
@@ -40,12 +44,12 @@ const Warehouse = () => {
     <div className="m-2  p-2 md:p-10 bg-white rounded-3xl">
       <Header
         category="Company Settings"
-        title="Warehouses"
-        btnTitle="Add W/H"
-        customFunc={() => setCreateWarehouse(true)}
+        title="Item List"
+        btnTitle="Add Item"
+        customFunc={() => setCreateItem(true)}
       />
       <GridComponent
-        dataSource={warehouseList}
+        dataSource={stockItemList}
         allowPaging
         allowSorting
         toolbar={["Search"]}
@@ -53,15 +57,16 @@ const Warehouse = () => {
         commandClick={handleCommandClick}
       >
         <ColumnsDirective>
-          {warehouseGrid.map((item, index) => (
+          {stockItemsGrid.map((item, index) => (
             <ColumnDirective key={index} {...item} />
           ))}
         </ColumnsDirective>
         <Inject services={[Page, Search, Toolbar, CommandColumn]} />
       </GridComponent>
-      {createWarehouse && <WarehouseCreator editDetails={selectedToEdit} />}
+      {createItem && <ItemCreator editDetails={selectedToEdit} />}
+      {selectedStockItem && <ItemCreator itemDetails={selectedStockItem} />}
     </div>
   );
 };
 
-export { Warehouse };
+export { StockItems };

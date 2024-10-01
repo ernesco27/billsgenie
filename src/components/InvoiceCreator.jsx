@@ -1,33 +1,23 @@
 import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-// import InputLabel from "@mui/material/InputLabel";
-// import MenuItem from "@mui/material/MenuItem";
-// import FormControl from "@mui/material/FormControl";
-//import Select from "@mui/material/Select";
+
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
-// import InputAdornment from "@mui/material/InputAdornment";
-// import OutlinedInput from "@mui/material/OutlinedInput";
-// import { InputMultiline, UseInput } from "../components/MultiInput";
-// import { DropdownSelector } from "../components/MultiInput";
 
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-//import dayjs from "dayjs";
 
 import { IoMdAddCircle } from "react-icons/io";
 import { IoMdCloseCircle } from "react-icons/io";
 import { IoIosSave } from "react-icons/io";
-//import { IoTrashBinSharp } from "react-icons/io5";
+
 import { SiShopware } from "react-icons/si";
 
 import { InputNumber, Select } from "antd";
 
-// import { NumberInputAdornments } from "./NumberInput";
-// import { AutoSelect } from "./AutoInput";
 import { Button, ConfirmModal } from "../components";
 
 import {
@@ -40,25 +30,9 @@ import {
   Edit,
   isEditable,
 } from "@syncfusion/ej2-react-grids";
-import { NumericTextBoxComponent } from "@syncfusion/ej2-react-inputs";
 
 import { useStateContext } from "../contexts/ContextProvider";
 
-const customers = ["Cash", "MaxMart", "Shoprite", "Melcom"];
-const suppliers = ["Cash", "Izako", "Harimat", "G-cube"];
-
-const items = [
-  "Super Chocolate",
-  "Eskimo Vanilla",
-  "Momment Strawberry",
-  "Delice Cone Caramel",
-];
-
-const vat = [
-  { label: "3%", value: 0.003 },
-  { label: "15%", value: 0.15 },
-  { label: "21.9%", value: 0.219 },
-];
 const trxn = [
   { label: "Cash", value: "Cash" },
   { label: "Credit", value: "Credit" },
@@ -96,8 +70,8 @@ const InvoiceCreator = ({
     setDiscountValue,
     discountAmount,
     setDiscountAmount,
-    handleQtyChange,
-    handleDisc,
+    // handleQtyChange,
+    // handleDisc,
     handlePriceInput,
     date,
     setDate,
@@ -112,25 +86,30 @@ const InvoiceCreator = ({
     amount,
     itemList,
     setItemList,
-    handleAddItem,
+    //handleAddItem,
     remarks,
     setRemarks,
-    tranDate,
-    setTranDate,
+    // tranDate,
+    // setTranDate,
     subTotal,
-    setSubTotal,
+    //setSubTotal,
     totalAmount,
-    setTotalAmount,
+    //setTotalAmount,
     totalTax,
-    setTotalTax,
-    totalDiscount,
-    setTotalDiscount,
+    // setTotalTax,
+    // totalDiscount,
+    // setTotalDiscount,
     generalDiscount,
     setGeneralDiscount,
     generalDiscAmount,
-    handleSave,
+    //handleSave,
     purchasesCreation,
     setPurchasesCreation,
+    customerList,
+    supplierList,
+    stockItemList,
+    taxList,
+    selectedCurrency,
   } = useStateContext();
 
   const [editingItemIndex, setEditingItemIndex] = useState(null);
@@ -141,7 +120,7 @@ const InvoiceCreator = ({
   const editOptions = { allowEditing: true, allowDeleting: true };
 
   useEffect(() => {
-    console.log("invoice details:", invoiceDetails);
+    //console.log("invoice details:", invoiceDetails);
     if (invoiceDetails && invoiceDetails.CustomerName) {
       //setDate(invoiceDetails.OrderDate);
       setTranType(invoiceDetails.TranType);
@@ -168,43 +147,43 @@ const InvoiceCreator = ({
       field: "Item",
       headerText: "ITEM",
       width: "250",
-      textAlign: "Center",
+      textAlign: "Left",
     },
     {
       field: "Quantity",
       headerText: "QUANTITY",
       width: "100",
-      textAlign: "Center",
+      textAlign: "Left",
     },
     {
       field: "Price",
       headerText: "PRICE",
       width: "100",
-      textAlign: "Center",
+      textAlign: "Left",
     },
     {
       field: "Discount",
       headerText: "DISCOUNT",
       width: "100",
-      textAlign: "Center",
+      textAlign: "Left",
     },
     {
       field: "Tax",
       headerText: "TAX",
       width: "100",
-      textAlign: "Center",
+      textAlign: "Left",
     },
     {
       field: "Amount",
       headerText: "AMOUNT",
       width: "100",
-      textAlign: "Center",
+      textAlign: "Left",
     },
     {
       field: "Action",
       headerText: "ACTION",
       width: "150",
-      textAlign: "Center",
+      textAlign: "Left",
 
       commands: [
         {
@@ -325,6 +304,7 @@ const InvoiceCreator = ({
     setPurchasesCreation(false);
     // Reset the input fields
     setCustomer("");
+    setSupplier("");
     setProduct("");
     setQuantity("");
     setPrice("");
@@ -334,6 +314,7 @@ const InvoiceCreator = ({
     setDiscountAmount(0);
     setVatAmount(0);
     setItemList([]);
+    setTin(""), setAddress("");
   };
 
   const returnToInvoice = () => {
@@ -408,36 +389,61 @@ const InvoiceCreator = ({
             </div>
             {purchasesCreation ? (
               <div>
-                <div className="mb-5">
-                  <Autocomplete
-                    disablePortal
-                    value={supplier}
-                    onChange={(e, newValue) => setSupplier(newValue)}
-                    id="suppliers"
-                    options={suppliers}
-                    //sx={{ width: 600 }}
-                    sx={{
-                      width: 600,
-                      borderRadius: "0.5rem",
-                      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-                      border: "1px solid #e5e7eb",
-                      "&:active": {
-                        outline: "4px solid transparent",
-                        outlineOffset: "2px",
-                      },
-                      "&:focus": {
-                        outline: "none",
-                        boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
-                      },
-                    }}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Select Supplier" />
-                    )}
-                    isOptionEqualToValue={(option, value) =>
-                      option === value || value === ""
-                    }
-                  />
-                </div>
+                {tranType === "Credit" ? (
+                  <div className="mb-5">
+                    <Autocomplete
+                      disablePortal
+                      value={supplier}
+                      onChange={(e, newValue) => {
+                        const selectedSupplier = supplierList.find(
+                          (sup) => sup.supplierName === newValue,
+                        );
+                        if (selectedSupplier) {
+                          setSupplier(selectedSupplier.supplierName);
+                          setAddress(selectedSupplier.businessAddress);
+                          setTin(selectedSupplier.tinNumber);
+                        }
+                      }}
+                      id="suppliers"
+                      options={supplierList.map((sup) => sup.supplierName)}
+                      //sx={{ width: 600 }}
+                      sx={{
+                        width: 600,
+                        borderRadius: "0.5rem",
+                        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                        border: "1px solid #e5e7eb",
+                        "&:active": {
+                          outline: "4px solid transparent",
+                          outlineOffset: "2px",
+                        },
+                        "&:focus": {
+                          outline: "none",
+                          boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
+                        },
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Select Supplier" />
+                      )}
+                      isOptionEqualToValue={(option, value) =>
+                        option === value || value === ""
+                      }
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-10">
+                    <TextField
+                      id="outlined-basic"
+                      value={supplier}
+                      onChange={(e) => {
+                        setSupplier(e.target.value);
+                      }}
+                      label="Supplier Name"
+                      variant="outlined"
+                      sx={{ width: 600 }}
+                    />
+                  </div>
+                )}
+
                 <div className="mb-8">
                   <div className="flex justify-between gap-4">
                     <span>
@@ -491,36 +497,61 @@ const InvoiceCreator = ({
               </div>
             ) : (
               <div>
-                <div className="mb-5">
-                  <Autocomplete
-                    disablePortal
-                    value={customer}
-                    onChange={(e, newValue) => setCustomer(newValue)}
-                    id="customers"
-                    options={customers}
-                    //sx={{ width: 600 }}
-                    sx={{
-                      width: 600,
-                      borderRadius: "0.5rem",
-                      boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-                      border: "1px solid #e5e7eb",
-                      "&:active": {
-                        outline: "4px solid transparent",
-                        outlineOffset: "2px",
-                      },
-                      "&:focus": {
-                        outline: "none",
-                        boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
-                      },
-                    }}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Select Customer" />
-                    )}
-                    isOptionEqualToValue={(option, value) =>
-                      option === value || value === ""
-                    }
-                  />
-                </div>
+                {tranType === "Credit" ? (
+                  <div className="mb-5">
+                    <Autocomplete
+                      disablePortal
+                      value={customer}
+                      onChange={(e, newValue) => {
+                        const selectedCustomer = customerList.find(
+                          (cust) => cust.customerName === newValue,
+                        );
+                        if (selectedCustomer) {
+                          setCustomer(selectedCustomer.customerName);
+                          setAddress(selectedCustomer.businessAddress);
+                          setTin(selectedCustomer.tinNumber);
+                        }
+                      }}
+                      id="customers"
+                      options={customerList.map((cust) => cust.customerName)}
+                      //sx={{ width: 600 }}
+                      sx={{
+                        width: 600,
+                        borderRadius: "0.5rem",
+                        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                        border: "1px solid #e5e7eb",
+                        "&:active": {
+                          outline: "4px solid transparent",
+                          outlineOffset: "2px",
+                        },
+                        "&:focus": {
+                          outline: "none",
+                          boxShadow: "0 0 0 3px rgba(147, 197, 253, 0.5)",
+                        },
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Select Customer" />
+                      )}
+                      isOptionEqualToValue={(option, value) =>
+                        option === value || value === ""
+                      }
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-10">
+                    <TextField
+                      id="outlined-basic"
+                      value={customer}
+                      onChange={(e) => {
+                        setCustomer(e.target.value);
+                      }}
+                      label="Customer Name"
+                      variant="outlined"
+                      sx={{ width: 600 }}
+                    />
+                  </div>
+                )}
+
                 <div className="mb-8">
                   <div className="flex justify-between gap-4">
                     <span>
@@ -583,9 +614,16 @@ const InvoiceCreator = ({
                   <Autocomplete
                     disablePortal
                     value={product}
-                    onChange={(e, newValue) => setProduct(newValue)}
                     id="product"
-                    options={items}
+                    onChange={(e, newValue) => {
+                      const selectedProduct = stockItemList.find(
+                        (prod) => prod.productName === newValue,
+                      );
+                      if (selectedProduct) {
+                        setProduct(selectedProduct.productName);
+                      }
+                    }}
+                    options={stockItemList.map((prod) => prod.productName)}
                     sx={{
                       width: 600,
                       borderRadius: "0.5rem",
@@ -624,7 +662,7 @@ const InvoiceCreator = ({
 
                     <InputNumber
                       style={{ height: 40, width: 120 }}
-                      prefix="GHC"
+                      prefix={selectedCurrency.value}
                       min={0.01}
                       formatter={(value) =>
                         `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
@@ -635,11 +673,14 @@ const InvoiceCreator = ({
                     />
                   </div>
                   <div className="flex flex-col mb-8">
-                    <label htmlFor="">Tax</label>
+                    <label htmlFor="tax">Tax</label>
                     <Select
                       value={tax}
                       style={{ width: 120, height: 40 }}
-                      options={vat}
+                      options={taxList.map((tax) => ({
+                        value: tax.taxValue,
+                        label: `${tax.taxRate}%`,
+                      }))}
                       onChange={(value) => setTax(value)}
                     />
                   </div>
@@ -763,10 +804,17 @@ const InvoiceCreator = ({
               </div>
             </div>
           </div>
-          <div className="flex items-center  mt-10 mb-5">
-            <p className="text-xl font-bold">Customer Name:</p>
-            <span className="text-xl pl-4">{customer}</span>
-          </div>
+          {purchasesCreation ? (
+            <div className="flex items-center  mt-10 mb-5">
+              <p className="text-xl font-bold">Supplier Name:</p>
+              <span className="text-xl pl-4">{supplier}</span>
+            </div>
+          ) : (
+            <div className="flex items-center  mt-10 mb-5">
+              <p className="text-xl font-bold">Customer Name:</p>
+              <span className="text-xl pl-4">{customer}</span>
+            </div>
+          )}
 
           <div>
             <GridComponent

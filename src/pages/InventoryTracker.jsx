@@ -19,37 +19,49 @@ import {
 import { useStateContext } from "../contexts/ContextProvider";
 
 //import { Header, DataGrid } from "../components";
+import { inventoryTrackingGrid } from "../data/Grids";
 
 const InventoryTracker = () => {
-  const { gridColumns } = useStateContext();
+  const { gridColumns, stockItemList } = useStateContext();
   const toolbarOptions = ["Search", "Print"];
 
-  const data = [
-    {
-      No: 1,
-      ProductName: "Eskimo Vanilla",
-      Warehouse_0: 25,
-      Warehouse_1: 35,
-      Warehouse_2: 45,
-      TotalQuantity: 105,
-    },
-    {
-      No: 2,
-      ProductName: "Mommnent Dessert Strawberry",
-      Warehouse_0: 20,
-      Warehouse_1: 30,
-      Warehouse_2: 40,
-      TotalQuantity: 90,
-    },
-    {
-      No: 3,
-      ProductName: "Super Chocolate",
-      Warehouse_0: 10,
-      Warehouse_1: 30,
-      Warehouse_2: 70,
-      TotalQuantity: 100,
-    },
-  ];
+  const generateWarehouseColumns = (stockItems) => {
+    const warehouseNames = new Set();
+    stockItems.forEach((item) => {
+      if (item.quantity) {
+        item.quantity.forEach((q) => warehouseNames.add(q.warehouseName));
+      }
+    });
+
+    return Array.from(warehouseNames).map((warehouse) => ({
+      field: warehouse,
+      headerText: warehouse,
+      textAlign: "Left",
+      width: "150",
+    }));
+  };
+
+  const warehouseColumns = stockItemList
+    ? generateWarehouseColumns(stockItemList)
+    : [];
+
+  // Transform stockItemList to include warehouse quantities as fields
+  const transformedData = stockItemList?.map((item) => {
+    const quantities = {};
+    let totalQuantity = 0;
+    console.log(item);
+
+    item.quantity.forEach((q) => {
+      quantities[q.warehouseName] = q.quantity;
+      totalQuantity += q.quantity;
+    });
+
+    return {
+      ...item,
+      ...quantities,
+      totalQuantity,
+    };
+  });
 
   return (
     <div>
@@ -63,7 +75,8 @@ const InventoryTracker = () => {
         <GridComponent
           cssClass="custom-grid"
           id="gridcomp"
-          dataSource={data}
+          //dataSource={data}
+          dataSource={transformedData}
           allowPaging
           allowSorting
           //allowFiltering
@@ -71,9 +84,18 @@ const InventoryTracker = () => {
           //commandClick={handleCommandClick}
         >
           <ColumnsDirective>
-            {gridColumns.map((item, index) => (
+            {inventoryTrackingGrid.map((item, index) => (
               <ColumnDirective key={index} {...item} />
             ))}
+            {warehouseColumns.map((item, index) => (
+              <ColumnDirective key={`warehouse-${index}`} {...item} />
+            ))}
+            <ColumnDirective
+              field="totalQuantity"
+              headerText="TOTAL QUANTITY"
+              textAlign="Left"
+              width="150"
+            />
           </ColumnsDirective>
           <Inject
             services={[

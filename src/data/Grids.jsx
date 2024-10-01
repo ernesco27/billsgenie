@@ -92,24 +92,16 @@ export const stockMovementGrid = [
 
 export const inventoryTrackingGrid = [
   {
-    field: "No",
+    field: "line",
     headerText: "NO",
     width: "100",
-    textAlign: "Center",
+    textAlign: "Left",
   },
   {
     field: "ProductName",
     headerText: "PRODUCT NAME",
     width: "150",
-    textAlign: "Center",
-  },
-
-  {
-    field: "TotalQuantity",
-    headerText: "TOTAL QUANTITY",
-    textAlign: "Center",
-    editType: "numericedit",
-    width: "100",
+    textAlign: "Left",
   },
 ];
 
@@ -164,6 +156,57 @@ export const stockTransferGrid = [
   {
     field: "ToWarehouse",
     headerText: "TO",
+    width: "100",
+    textAlign: "Left",
+  },
+
+  {
+    field: "Action",
+    headerText: "ACTION",
+    width: "150",
+    textAlign: "Center",
+    commands: [
+      {
+        type: "View",
+        buttonOption: {
+          //cssClass: "e-flat e-medium",
+          iconCss: "e-eye e-icons",
+        },
+      },
+      {
+        type: "Edit",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-edit e-icons",
+        },
+      },
+      {
+        type: "Delete",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-icons e-trash ",
+        },
+      },
+    ],
+  },
+];
+
+export const stockAdjustmentGrid = [
+  {
+    field: "adjustmentDate",
+    headerText: "DATE",
+    width: "150",
+    textAlign: "Left",
+  },
+  {
+    field: "referenceNo",
+    headerText: "REFERENCE NO.",
+    width: "100",
+    textAlign: "Left",
+  },
+  {
+    field: "warehouse",
+    headerText: "WAREHOUSE",
     width: "100",
     textAlign: "Left",
   },
@@ -388,34 +431,224 @@ export const customersGrid = [
     field: "Id",
     headerText: "ID",
     width: "50",
-    textAlign: "Center",
+    textAlign: "Left",
   },
   {
     field: "customerName",
     headerText: "CUSTOMER NAME",
     width: "120",
-    textAlign: "Center",
+    textAlign: "Left",
   },
   {
     field: "businessUnit",
     headerText: "BUSINESS UNIT",
     width: "120",
-    textAlign: "Center",
+    textAlign: "Left",
   },
   {
     field: "tinNumber",
     headerText: "TIN NO.",
     width: "120",
-    textAlign: "Center",
+    textAlign: "Left",
   },
 
   {
     field: "relManager",
     headerText: "REL. MANAGER",
     width: "120",
+    textAlign: "Left",
+  },
+
+  {
+    field: "Action",
+    headerText: "ACTION",
+    width: "150",
+    textAlign: "Center",
+    commands: [
+      {
+        type: "View",
+        buttonOption: {
+          //cssClass: "e-flat e-medium",
+          iconCss: "e-eye e-icons",
+        },
+      },
+      {
+        type: "Edit",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-edit e-icons",
+        },
+      },
+      {
+        type: "Delete",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-icons e-trash ",
+        },
+      },
+    ],
+  },
+];
+
+export const stockItemsGrid = [
+  {
+    field: "SKU",
+    headerText: "SKU",
+    width: "100",
+    textAlign: "Left",
+  },
+
+  {
+    field: "productName",
+    headerText: "PRODUCT NAME",
+    width: "150",
+    textAlign: "Left",
+  },
+
+  {
+    field: "brandName",
+    headerText: "BRAND NAME",
+    width: "100",
+    textAlign: "Left",
+  },
+
+  {
+    field: "category",
+    headerText: "CATEGORY",
+    width: "100",
+
+    textAlign: "Left",
+  },
+
+  {
+    field: "unit",
+    headerText: "UNIT",
+    width: "50",
+    textAlign: "Left",
+  },
+  {
+    field: "supplierName",
+    headerText: "SUPPLIER NAME",
+    width: "125",
+    textAlign: "Left",
+  },
+  {
+    field: "Action",
+    headerText: "ACTION",
+    width: "150",
+    textAlign: "Center",
+    commands: [
+      {
+        type: "View",
+        buttonOption: {
+          //cssClass: "e-flat e-medium",
+          iconCss: "e-eye e-icons",
+        },
+      },
+      {
+        type: "Edit",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-edit e-icons",
+        },
+      },
+      {
+        type: "Delete",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-icons e-trash ",
+        },
+      },
+    ],
+  },
+];
+
+export const taxGrid = [
+  {
+    field: "Id",
+    headerText: "ID",
+    width: "50",
+    textAlign: "Center",
+  },
+  {
+    field: "taxRate",
+    headerText: "TAX RATE (%)",
+    width: "120",
+    textAlign: "Center",
+  },
+  {
+    field: "taxValue",
+    headerText: "TAX VALUE",
+    width: "120",
     textAlign: "Center",
   },
 
+  {
+    field: "Action",
+    headerText: "ACTION",
+    width: "50",
+    textAlign: "Center",
+    commands: [
+      {
+        type: "Edit",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-edit e-icons",
+        },
+      },
+      {
+        type: "Delete",
+        buttonOption: {
+          //cssClass: "e-flat",
+          iconCss: "e-icons e-trash ",
+        },
+      },
+    ],
+  },
+];
+
+export const inventoryLevelGrid = [
+  {
+    field: "line",
+    headerText: "LINE",
+    width: "100",
+    textAlign: "Left",
+  },
+
+  {
+    field: "productName",
+    headerText: "PRODUCT NAME",
+    width: "150",
+    textAlign: "Left",
+  },
+
+  {
+    field: "brandName",
+    headerText: "BRAND NAME",
+    width: "100",
+    textAlign: "Left",
+  },
+
+  {
+    field: "category",
+    headerText: "CATEGORY",
+    width: "100",
+
+    textAlign: "Left",
+  },
+
+  {
+    field: "unit",
+    headerText: "UNIT",
+    width: "50",
+    textAlign: "Left",
+  },
+  {
+    field: "supplierName",
+    headerText: "SUPPLIER NAME",
+    width: "125",
+    textAlign: "Left",
+  },
   {
     field: "Action",
     headerText: "ACTION",

@@ -1,7 +1,12 @@
 import React from "react";
+import { CompanyCreator } from "../components/CompanyCreator";
 
 const CompanyInfo = () => {
-  return <div>company information here</div>;
+  return (
+    <div>
+      <CompanyCreator />
+    </div>
+  );
 };
 
 export default CompanyInfo;

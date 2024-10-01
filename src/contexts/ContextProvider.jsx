@@ -2,6 +2,8 @@ import react, { createContext, useContext, useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { CompassOutlined } from "@ant-design/icons";
 import { inventoryTrackingGrid } from "../data/Grids";
+import { message } from "antd";
+import { v4 as uuidv4 } from "uuid";
 
 const StateContext = createContext();
 
@@ -88,6 +90,12 @@ const storedTransferList = () => {
   return savedData ? JSON.parse(savedData) : [];
 };
 
+const storedAdjustmentList = () => {
+  const savedData = localStorage.getItem("stockAdjustment");
+
+  return savedData ? JSON.parse(savedData) : [];
+};
+
 const storedCustomerList = () => {
   const savedData = localStorage.getItem("customer");
   return savedData ? JSON.parse(savedData) : [];
@@ -101,6 +109,26 @@ const storedSupplierList = () => {
 const storedWarehouseList = () => {
   const savedData = localStorage.getItem("warehouse");
   return savedData ? JSON.parse(savedData) : [];
+};
+
+const storedStockList = () => {
+  const savedData = localStorage.getItem("stockList");
+  return savedData ? JSON.parse(savedData) : [];
+};
+
+const storedTaxList = () => {
+  const savedData = localStorage.getItem("taxList");
+  return savedData ? JSON.parse(savedData) : [];
+};
+
+const storedCurrency = () => {
+  const savedData = localStorage.getItem("currency");
+  return savedData ? JSON.parse(savedData) : null;
+};
+
+const storedCompanyData = () => {
+  const savedData = localStorage.getItem("company");
+  return savedData ? JSON.parse(savedData) : null;
 };
 
 const ContextProvider = ({ children }) => {
@@ -154,20 +182,26 @@ const ContextProvider = ({ children }) => {
 
   const [editingIndex, setEditingIndex] = useState(null);
 
-  const [warehouses, setWarehouses] = useState(InitialWarehouses);
+  const [warehouses, setWarehouses] = useState(storedWarehouseList);
   const [fromWarehouse, setFromWarehouse] = useState("");
   const [toWarehouse, setToWarehouse] = useState("");
-  const [gridColumns, setGridColumns] = useState(() => [
-    inventoryTrackingGrid[0],
-    inventoryTrackingGrid[1],
-    ...generateWarehouseColumns(warehouses),
-    inventoryTrackingGrid[2],
-  ]);
+  // const [gridColumns, setGridColumns] = useState(() => [
+  //   inventoryTrackingGrid[0],
+  //   inventoryTrackingGrid[1],
+  //   ...generateWarehouseColumns(warehouses),
+  //   inventoryTrackingGrid[2],
+  // ]);
 
   const [createStockTransfer, setCreateStockTransfer] = useState(false);
+  const [createStockAdjustment, setCreateStockAdjustment] = useState(false);
   const [stockTransferList, setStockTransferList] =
     useState(storedTransferList);
+  const [stockAdjustmentList, setStockAdjustmentList] =
+    useState(storedAdjustmentList);
   const [stockList, setStockList] = useState([]);
+
+  const [inventory, setInventory] = useState([]);
+
   const [stockTransferDetails, setStockTransferDetails] = useState({});
   const [stockTransferToEdit, setStockTransferToEdit] = useState(null);
 
@@ -218,6 +252,36 @@ const ContextProvider = ({ children }) => {
     relManager: "",
   };
 
+  const itemData = {
+    productName: "",
+    brandName: "",
+    category: "",
+    batchNo: "",
+    productDescription: "",
+    quantity: "",
+    unit: "",
+    supplierName: "",
+    SKU: "",
+    reorderLevel: "",
+  };
+
+  const taxData = {
+    taxRate: "",
+    taxValue: "",
+  };
+
+  const companyData = {
+    businessName: "",
+    logo: "",
+    businessAddress: "",
+    busRegNo: "",
+    email: "",
+    phoneNumber: "",
+    tinNumber: "",
+  };
+
+  const [taxList, setTaxList] = useState(storedTaxList);
+  const [createTax, setCreateTax] = useState(false);
   const [warehouseList, setWarehouseList] = useState(storedWarehouseList);
   const [createWarehouse, setCreateWarehouse] = useState(false);
   const [warehouseName, setWarehouseName] = useState("");
@@ -228,12 +292,156 @@ const ContextProvider = ({ children }) => {
   const [suppFormData, setSuppFormData] = useState(supplierData);
   const [supplierList, setSupplierList] = useState(storedSupplierList);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [productForm, setProductForm] = useState(itemData);
+  const [createItem, setCreateItem] = useState(false);
+  const [stockItemList, setStockItemList] = useState(storedStockList);
+  const [selectedStockItem, setSelectedStockItem] = useState(null);
+  const [taxForm, setTaxForm] = useState(taxData);
+  const [selectedCurrency, setSelectedCurrency] = useState(storedCurrency);
+  //const [companyInfo, setCompanyInfo] = useState(storedCompanyData);
+  const [companyForm, setCompanyForm] = useState(companyData);
+  const [createCompany, setCreateCompany] = useState(false);
+  //const [companyList, setCompanyList] = useState(storedCompanyData);
+  const [companyDetails, setCompanyDetails] = useState(storedCompanyData);
+  const [companySaved, setCompanySaved] = useState(false); // State to track if the form is saved
+  const [isCompanyEditable, setIsCompanyEditable] = useState(!companyDetails);
 
-  const handleAddWarehouse = (warehouseName) => {
+  const handleSaveCompany = () => {
+    if (!companySaved) {
+      // Save the form
+
+      setCompanyDetails({ ...companyForm });
+      console.log(companyDetails);
+      message.success("Company details saved successfully!");
+
+      setCompanyForm({ ...companyForm });
+      localStorage.setItem("company", JSON.stringify(companyForm));
+
+      setCompanySaved(true); // Set formSaved to true after saving
+      setIsCompanyEditable(false); // Disable form fields
+    } else {
+      // Allow editing
+      setIsCompanyEditable(true); // Enable form fields for editing
+      setCompanySaved(false);
+    }
+  };
+
+  const handleAddTax = (taxRate, taxValue) => {
+    if (selectedToEdit) {
+      // Updating an existing item
+      const updatedTaxList = taxList.map((tax) =>
+        tax.taxRate === selectedToEdit.taxRate
+          ? {
+              ...tax,
+
+              taxRate,
+              taxValue,
+            }
+          : tax,
+      );
+
+      setTaxList(updatedTaxList);
+      localStorage.setItem("taxList", JSON.stringify(updatedTaxList));
+      setSelectedToEdit(null); // Reset the selectedToEdit state after updating
+    } else {
+      // Creating a new item
+
+      const newTax = {
+        Id: taxList.length
+          ? Math.max(...taxList.map((tax, index) => index)) + 2
+          : 1,
+
+        taxRate,
+        taxValue,
+      };
+
+      console.log("new tax:", newTax);
+
+      const updatedTaxList = [newTax, ...taxList];
+      setTaxList(updatedTaxList);
+
+      localStorage.setItem("taxList", JSON.stringify(updatedTaxList));
+    }
+
+    // Reset the input fields
+
+    setTaxForm(taxData);
+
+    setCreateTax(false);
+  };
+
+  const handleEditTax = (taxRate) => {
+    const taxToEdit = taxList.find((tax) => tax.taxRate === taxRate);
+
+    setSelectedToEdit(taxToEdit);
+    setCreateTax(true);
+  };
+
+  const handleDeleteTax = (taxRate) => {
+    const updatedList = taxList.filter((tax) => tax.taxRate !== taxRate);
+
+    setTaxList(updatedList);
+    localStorage.setItem("taxList", JSON.stringify(updatedList));
+  };
+
+  const handleAddStockItem = (product) => {
+    if (selectedToEdit) {
+      // Updating an existing item
+      const updatedStockList = stockItemList.map((stockItem) =>
+        stockItem.Id === selectedToEdit.Id
+          ? { ...stockItem, ...product }
+          : stockItem,
+      );
+      console.log(updatedStockList);
+      setStockItemList(updatedStockList);
+
+      message.success("Updated Stock Item Successfully");
+      localStorage.setItem("stockList", JSON.stringify(updatedStockList));
+      setSelectedToEdit(null);
+    } else {
+      // Creating a new item
+      const newItem = {
+        Id: uuidv4(),
+        line: stockItemList.length
+          ? Math.max(...stockItemList.map((item, index) => index)) + 2
+          : 1,
+        ...product,
+      };
+      const updatedStockList = [newItem, ...stockItemList];
+      setStockItemList(updatedStockList);
+      message.success("Added Stock Item Successfully");
+      localStorage.setItem("stockList", JSON.stringify(updatedStockList));
+    }
+    setProductForm(itemData);
+    setCreateItem(false);
+  };
+
+  const handleViewItem = (Id) => {
+    const reference = stockItemList.find((product) => product.Id === Id);
+    if (reference) {
+      setSelectedStockItem(reference);
+    }
+  };
+
+  const handleEditItem = (Id) => {
+    const productToEdit = stockItemList.find((product) => product.Id === Id);
+
+    setSelectedToEdit(productToEdit);
+    setCreateItem(true);
+  };
+
+  const handleDeleteItem = (Id) => {
+    const updatedList = stockItemList.filter((product) => product.Id !== Id);
+
+    setStockItemList(updatedList);
+    localStorage.setItem("stockList", JSON.stringify(updatedList));
+  };
+
+  const handleAddWarehouse = (Id) => {
     if (selectedToEdit) {
       // Updating an existing invoice
       const updatedWarehouseList = warehouseList.map((warehouse) =>
-        warehouse.warehouseName === selectedToEdit.warehouseName
+        warehouse.Id === selectedToEdit.Id
           ? {
               ...warehouse,
 
@@ -243,21 +451,21 @@ const ContextProvider = ({ children }) => {
       );
 
       setWarehouseList(updatedWarehouseList);
+      message.success("Warehouse updated successfully");
       localStorage.setItem("warehouse", JSON.stringify(updatedWarehouseList));
       setSelectedToEdit(null); // Reset the selectedToEdit state after updating
     } else {
       // Creating a new warehouse
 
       const newWarehouse = {
-        Id: warehouseList.length
-          ? Math.max(...warehouseList.map((item, index) => index)) + 2
-          : 1,
+        Id: uuidv4(),
 
         warehouseName,
       };
 
       const updatedWarehouseList = [...warehouseList, newWarehouse];
       setWarehouseList(updatedWarehouseList);
+      message.success("Warehouse added successfully");
 
       //setUserList(updatedSupplierList);
       localStorage.setItem("warehouse", JSON.stringify(updatedWarehouseList));
@@ -270,21 +478,22 @@ const ContextProvider = ({ children }) => {
     setCreateWarehouse(false);
   };
 
-  const handleEditWarehouse = (warehouseName) => {
+  const handleEditWarehouse = (Id) => {
     const warehouseToEdit = warehouseList.find(
-      (warehouse) => warehouse.warehouseName === warehouseName,
+      (warehouse) => warehouse.Id === Id,
     );
 
     setSelectedToEdit(warehouseToEdit);
     setCreateWarehouse(true);
   };
 
-  const handleDeleteWarehouse = (warehouseName) => {
+  const handleDeleteWarehouse = (Id) => {
     const updatedList = warehouseList.filter(
-      (warehouse) => warehouse.warehouseName !== warehouseName,
+      (warehouse) => warehouse.Id !== Id,
     );
 
     setWarehouseList(updatedList);
+    message.success("Warehouse deleted successfully");
     localStorage.setItem("warehouse", JSON.stringify(updatedList));
   };
 
@@ -566,15 +775,6 @@ const ContextProvider = ({ children }) => {
     localStorage.setItem("stockTransfer", JSON.stringify(updatedList));
   };
 
-  function generateWarehouseColumns(warehouses) {
-    return warehouses.map((warehouse, index) => ({
-      field: `Warehouse_${index}`,
-      headerText: warehouse.toUpperCase(),
-      width: "150",
-      textAlign: "Center",
-    }));
-  }
-
   const handleViewPurchases = (invoiceNo) => {
     const invoice = purchasesList.find(
       (purchase) => purchase.InvoiceNo === invoiceNo,
@@ -833,16 +1033,51 @@ const ContextProvider = ({ children }) => {
     setCreateStockTransfer(false); // Close the invoice creation modal
   };
 
+  // const handleAdd = (sale) => {
+  //   if (selectedToEdit) {
+  //     // Updating an existing item
+  //     const updatedStockList = stockItemList.map((stockItem) =>
+  //       stockItem.Id === selectedToEdit.Id
+  //         ? { ...stockItem, ...product }
+  //         : stockItem,
+  //     );
+  //     console.log(updatedStockList);
+  //     setStockItemList(updatedStockList);
+
+  //     message.success("Updated Stock Item Successfully");
+  //     localStorage.setItem("stockList", JSON.stringify(updatedStockList));
+  //     setSelectedToEdit(null);
+  //   } else {
+  //     // Creating a new item
+  //     const newItem = {
+  //       Id: uuidv4(),
+  //       line: stockItemList.length
+  //         ? Math.max(...stockItemList.map((item, index) => index)) + 2
+  //         : 1,
+  //       ...product,
+  //     };
+  //     const updatedStockList = [newItem, ...stockItemList];
+  //     setStockItemList(updatedStockList);
+  //     message.success("Added Stock Item Successfully");
+  //     localStorage.setItem("stockList", JSON.stringify(updatedStockList));
+  //   }
+  //   setProductForm(itemData);
+  //   setCreateItem(false);
+  // };
+
   const handleSave = (
     date,
     trantype,
     customer,
+    tin,
+    address,
     items,
     amount,
     generalDiscAmount,
     totalTax,
     subTotal,
     remarks,
+    Id,
   ) => {
     if (selectedToEdit) {
       // Updating an existing invoice
@@ -853,6 +1088,8 @@ const ContextProvider = ({ children }) => {
               OrderDate: date.format("DD/MM/YYYY"),
               TranType: trantype,
               CustomerName: customer,
+              CustomerTin: tin,
+              CustomerAddress: address,
               Items: items,
               TotalAmount: amount,
               SubTotal: subTotal,
@@ -882,13 +1119,16 @@ const ContextProvider = ({ children }) => {
       const newInvoiceNo = `${sectionInitials}${currentYear}${nextInvoiceNumber}`;
 
       const newSale = {
-        Id: salesList.length
+        Id: uuidv4(),
+        Line: salesList.length
           ? Math.max(...salesList.map((item, index) => index)) + 2
           : 1,
         OrderDate: date.format("DD/MM/YYYY"),
         InvoiceNo: newInvoiceNo,
         TranType: trantype,
         CustomerName: customer,
+        CustomerTin: tin,
+        CustomerAddress: address,
         Items: items,
         TotalAmount: amount,
         SubTotal: subTotal,
@@ -897,11 +1137,49 @@ const ContextProvider = ({ children }) => {
         Remarks: remarks,
       };
 
+      console.log("new sale:", newSale);
+
       setSalesList([newSale, ...salesList]);
+      // Update stock quantities in warehouses
+      setStockItemList((prevItems) => {
+        return prevItems.map((item) => {
+          const soldItem = items.find((i) => i.Item === item.productName);
+          console.log("sold items are:", soldItem);
+          if (soldItem) {
+            let remainingQuantity = soldItem.Quantity;
+            console.log("remain qty:", remainingQuantity);
+
+            console.log("ITEM:", item);
+
+            const updatedQuantities = item.quantity.map((warehouseQty) => {
+              if (remainingQuantity > 0 && warehouseQty.quantity > 0) {
+                const deductedQty = Math.min(
+                  warehouseQty.quantity,
+                  remainingQuantity,
+                );
+                remainingQuantity -= deductedQty;
+
+                return {
+                  ...warehouseQty,
+                  quantity: warehouseQty.quantity - deductedQty,
+                };
+              }
+
+              return warehouseQty;
+            });
+
+            return { ...item, quantity: updatedQuantities };
+          }
+
+          return item;
+        });
+      });
     }
 
     // Reset the input fields
     setCustomer("");
+    setTin("");
+    setAddress("");
     setProduct("");
     setQuantity("");
     setPrice("");
@@ -1637,7 +1915,7 @@ const ContextProvider = ({ children }) => {
         handleDeletePurchases,
         handleEditPurchases,
         handleViewPurchases,
-        gridColumns,
+        //gridColumns,
         createStockTransfer,
         setCreateStockTransfer,
         warehouses,
@@ -1692,6 +1970,45 @@ const ContextProvider = ({ children }) => {
         handleAddWarehouse,
         handleEditWarehouse,
         handleDeleteWarehouse,
+        productForm,
+        setProductForm,
+        createItem,
+        setCreateItem,
+        stockItemList,
+        setStockItemList,
+        handleAddStockItem,
+        handleViewItem,
+        handleEditItem,
+        handleDeleteItem,
+        selectedStockItem,
+        setSelectedStockItem,
+        taxList,
+        setTaxList,
+        createTax,
+        setCreateTax,
+        handleAddTax,
+        handleEditTax,
+        handleDeleteTax,
+        taxForm,
+        setTaxForm,
+        selectedCurrency,
+        setSelectedCurrency,
+        // companyInfo,
+        // setCompanyInfo,
+        companyForm,
+        setCompanyForm,
+        createCompany,
+        setCreateCompany,
+        handleSaveCompany,
+        companyDetails,
+        companySaved,
+        setCompanySaved,
+        isCompanyEditable,
+        setIsCompanyEditable,
+        createStockAdjustment,
+        setCreateStockAdjustment,
+        stockAdjustmentList,
+        setStockAdjustmentList,
       }}
     >
       {children}
